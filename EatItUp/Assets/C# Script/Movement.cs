@@ -8,11 +8,13 @@ public class Movement : MonoBehaviour
     public Vector3 Direction;
     [Range(1,10)]
     public float speed;
-
+    public bool pac;
+    Vector3 spawnPoint;
     Rigidbody2D rigidbody2d;
     // Start is called before the first frame update
     void Start()
     {
+        spawnPoint = transform.position;
         rigidbody2d = GetComponent<Rigidbody2D>();
     }
     public void Move(Vector3 dir)
@@ -30,16 +32,23 @@ public class Movement : MonoBehaviour
             Direction = Vector3.zero;
         }
         rigidbody2d.velocity = Direction * speed;
+        if (pac)
+        {
+            if (Direction.x > 0)
+                transform.rotation = Quaternion.Euler(0, 0, 90);
+            if (Direction.x < 0)
+                transform.rotation = Quaternion.Euler(0, 0, -90);
+            if (Direction.y > 0)
+                transform.rotation = Quaternion.Euler(0, 0, 180);
+            if (Direction.y < 0)
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+    }
 
-        if(Direction.x > 0)
-            transform.rotation = Quaternion.Euler(0, 0, 90);
-        if(Direction.x < 0)
-            transform.rotation = Quaternion.Euler(0, 0, -90);
-        if(Direction.y > 0)
-            transform.rotation = Quaternion.Euler(0, 0, 180);
-        if(Direction.y < 0)
-            transform.rotation = Quaternion.Euler(0, 0, 0);
-
+    public void TeleportToSpawnPoint()
+    {
+        transform.position = spawnPoint;
+        Direction = Vector3.zero;
     }
 }
 public struct MoveCommand
@@ -57,6 +66,27 @@ public struct MoveCommand
     {
         component?.Move(dir);
     }
+
+    public override bool Equals(object obj)
+    {
+        if (!(obj is MoveCommand))
+        {
+            return false;
+        }
+
+        var command = (MoveCommand)obj;
+        return dir.Equals(command.dir) &&
+               EqualityComparer<Movement>.Default.Equals(component, command.component);
+    }
+
+    public override int GetHashCode()
+    {
+        var hashCode = -555351148;
+        hashCode = hashCode * -1521134295 + EqualityComparer<Vector2>.Default.GetHashCode(dir);
+        hashCode = hashCode * -1521134295 + EqualityComparer<Movement>.Default.GetHashCode(component);
+        return hashCode;
+    }
+
     public void Undo()
     {
         component?.Move(-dir);

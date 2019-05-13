@@ -9,4 +9,16 @@ public class Ghost : Character
     {
         OnStart();
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.collider.tag == "Pac")
+        { 
+            Character other = collision.collider.GetComponent<Character>();
+            InputController tempCurrentController = GetCurrentController();
+            tempCurrentController.GetComponent<Score>().AddToValue(50);
+            SetCurrentController(other.GetCurrentController());
+            other.SetCurrentController(tempCurrentController);
+        }
+    }
 }

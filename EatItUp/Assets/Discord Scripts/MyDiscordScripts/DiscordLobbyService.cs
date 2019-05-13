@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Discord;
+
 public class DiscordLobbyService : MonoBehaviour
 {
     public static DiscordLobbyService INSTANCE;
@@ -68,7 +70,7 @@ public class DiscordLobbyService : MonoBehaviour
             return;
 
         var txn = lobbyManager.GetLobbyCreateTransaction();
-        txn.SetCapacity(6);
+        txn.SetCapacity(5);
         txn.SetType(LobbyType.Public);
         txn.SetMetadata("Something", "123");
         lobbyManager.CreateLobby(txn, (Result result, ref Lobby lobby) =>
@@ -89,6 +91,21 @@ public class DiscordLobbyService : MonoBehaviour
 
 
     }
+    public void UpdateLobbySize(uint numberOfLocalPlayersConnected)
+    {
+        if (currentLobbyId == 0)
+            return;
+
+        Debug.Log(numberOfLocalPlayersConnected);
+        var transaction = lobbyManager.GetLobbyUpdateTransaction(currentLobbyId);
+        transaction.SetCapacity(5 - numberOfLocalPlayersConnected);
+        lobbyManager.UpdateLobby(currentLobbyId, transaction, (Result result) =>
+         {
+             if (result != Result.Ok)
+                 Debug.Log(result);
+         });
+    }
+
     public void DisconnectLobby()
     {
         if (currentLobbyId == 0)
@@ -121,7 +138,7 @@ public class DiscordLobbyService : MonoBehaviour
                 for (int i = 0; i < lobbyManager.MemberCount(lobby.Id); i++)
                 {
                     var userId = lobbyManager.GetMemberUserId(lobby.Id, i);
-                    lobbyManager.SendNetworkMessage(lobby.Id, userId, 0, System.Text.Encoding.UTF8.GetBytes("Hello!"));
+                    
                 }
             }
             else
@@ -145,7 +162,7 @@ public class DiscordLobbyService : MonoBehaviour
                 for (int i = 0; i < lobbyManager.MemberCount(lobby.Id); i++)
                 {
                     var userId = lobbyManager.GetMemberUserId(lobby.Id, i);
-                    lobbyManager.SendNetworkMessage(lobby.Id, userId, 0, System.Text.Encoding.UTF8.GetBytes("Hello!"));
+                    //FetchMemberAvatar(userId);
                 }
             }
             else
@@ -213,7 +230,14 @@ public class DiscordLobbyService : MonoBehaviour
         var newTxn = lobbyManager.GetLobbyUpdateTransaction(currentLobbyId);
 
         #region Set Meta Data For Lobby
-
+        if (SceneManager.GetActiveScene().name == "Game")
+        {
+            newTxn.SetLocked(true);
+        }
+        else
+        {
+            newTxn.SetLocked(false);
+        }
         #endregion
 
         lobbyManager.UpdateLobby(currentLobbyId, newTxn, (newResult) =>
@@ -241,5 +265,32 @@ public class DiscordLobbyService : MonoBehaviour
         lobbyManager.OpenNetworkChannel(lobbyId, 1, false);
         // We're ready to go!
     }
+    private void FetchMemberAvatar(long userId)
+    {
+        DiscordManager.INSTANCE.GetDiscord().GetImageManager().Fetch(Discord.ImageHandle.User(userId), (result, handleResult) =>
+        {
+            if (result != Discord.Result.Ok)
+                Debug.Log(result);
 
+
+        });
+    }
+
+    public void SetMetaDataOfMember(long userid,string key,string value)
+    {
+        if (userid == 0)
+            return;
+
+        var memberTransaction = lobbyManager.GetMemberUpdateTransaction(currentLobbyId, userid);
+        memberTransaction.SetMetadata(key, value);
+        lobbyManager.UpdateMember(currentLobbyId, userid, memberTransaction, (result) =>
+           {
+               if (result != Result.Ok)
+                   Debug.Log(result);
+           });
+    }
+    public string GetMetaDataOfMember(long userid,string key)
+    {
+        return lobbyManager.GetMemberMetadataValue(currentLobbyId, userid, key);
+    }
 }

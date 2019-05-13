@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Discord;
 public class DiscordActivityService : MonoBehaviour
 {
     public static DiscordActivityService INSTANCE;
+
     ActivityManager manager;
     private void Awake()
     {
@@ -33,8 +35,7 @@ public class DiscordActivityService : MonoBehaviour
                 Debug.LogError(result);
             }
         });
-        manager.RegisterCommand("ProjectDiscord.exe://run");
-
+        //manager.RegisterCommand("ProjectDiscord.exe://run");
         //Subscribe Functions
         manager.OnActivityInvite += Manager_OnActivityInvite;
         manager.OnActivityJoin += Manager_OnActivityJoin;
@@ -43,7 +44,7 @@ public class DiscordActivityService : MonoBehaviour
     }
     public void OnLobbyUpdate(long lobbyId)
     {
-        Activity(new ActivityInformation("In Lobby", "Testing"));
+        Activity(new ActivityInformation(GameManager.INSTANCE.GetCurrentGameState(), "Testing"));
     }
 
     #region Subscribe Functions
@@ -103,7 +104,7 @@ public class DiscordActivityService : MonoBehaviour
         DiscordLobbyService ls = DiscordLobbyService.INSTANCE;
 
         Lobby lob = ls.GetLobby();
-        if (lob.Id != 0)
+        if (lob.Id != 0 && !lob.Locked)
         {
             activity.Party = new ActivityParty()
             {
@@ -113,11 +114,11 @@ public class DiscordActivityService : MonoBehaviour
                     CurrentSize = ls.GetMemberCount(),
                     MaxSize = (int)lob.Capacity
                 },
-                
+
             };
             activity.Secrets = new ActivitySecrets
             {
-                Join =  lob.Id +":"+ lob.Secret,
+                Join = lob.Id + ":" + lob.Secret,
             };
         }
         if (lob.Id != 0)
