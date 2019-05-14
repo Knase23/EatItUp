@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Discord;
 
+
 public class DiscordLobbyService : MonoBehaviour
 {
     public static DiscordLobbyService INSTANCE;
@@ -34,11 +35,14 @@ public class DiscordLobbyService : MonoBehaviour
     {
         lobbyManager = DiscordManager.INSTANCE.GetDiscord().GetLobbyManager();
         userManager = DiscordManager.INSTANCE.GetDiscord().GetUserManager();
+
         lobbyManager.OnLobbyUpdate += LobbyManager_OnLobbyUpdate;
         lobbyManager.OnLobbyUpdate += DiscordActivityService.INSTANCE.OnLobbyUpdate;
         lobbyManager.OnNetworkMessage += LobbyManager_OnNetworkMessage;
 
     }
+
+
     private void Update()
     {
         if (coroutine == null && currentLobbyId != 0)
@@ -58,8 +62,34 @@ public class DiscordLobbyService : MonoBehaviour
     }
     private void LobbyManager_OnNetworkMessage(long lobbyId, long userId, byte channelId, byte[] data)
     {
-        Debug.Log("Got Network Message");
-        // Use a Decoder, that will then process what to do with the information
+        switch (channelId)
+        {
+            case 0:
+                Debug.Log(userId + "Wants To Move");
+                PlayerHandler.inst?.GetInputControllerFromUserId(userId).SetDirection(new InputController.InputData(data));
+                break;
+            case 1:
+                Debug.Log(userId + "Wants you to change scene");
+                GameManager.LoadSceneData sceneToLoad = new GameManager.LoadSceneData(data);
+                GameManager.INSTANCE.LoadScene(sceneToLoad.scene);
+                break;
+            case 2:
+                Debug.Log(userId + "Wants you to change position of a object");
+                Movement.MovmentData movmentData = new Movement.MovmentData(data);
+                Transform theThingToMove = PlayerHandler.inst?.GetInputControllerFromUserId(userId).controlledCharacter.transform; //= movmentData.GetPosition();
+                theThingToMove.position = movmentData.GetPosition();
+                break;
+            case 3:
+                Debug.Log(userId +"Do this Stupid thing");
+                PlayerHandler.PlayerHandlerData handlerData = new PlayerHandler.PlayerHandlerData(data);
+                PlayerHandler.inst.SetAllPlayers(handlerData.orderSelected,handlerData.orderOfId);
+                break;
+            default:
+                Debug.Log(userId + "Sendet messege not reqognized");
+                break;
+        }
+
+
     }
 
 
@@ -78,7 +108,7 @@ public class DiscordLobbyService : MonoBehaviour
             SetCurrent(lobby.Id, lobby.Secret, lobby.OwnerId);
             try
             {
-                lobbyManager.ConnectNetwork(lobby.Id);
+                InitNetworking(lobby.Id);
             }
             catch (ResultException result2)
             {
@@ -129,7 +159,7 @@ public class DiscordLobbyService : MonoBehaviour
         var l = GetLobby();
         lobbyManager.ConnectLobby(l.Id, l.Secret, (Result result, ref Lobby lobby) =>
         {
-            Debug.Log("ConnectToLobby");
+            //Debug.Log("ConnectToLobby");
             if (result == Result.Ok)
             {
                 Debug.Log("It worked?");
@@ -143,7 +173,7 @@ public class DiscordLobbyService : MonoBehaviour
             }
             else
             {
-                Debug.Log(result);
+                //Debug.Log(result);
             }
 
         });
@@ -191,6 +221,8 @@ public class DiscordLobbyService : MonoBehaviour
     }
     public IEnumerable<User> GetLobbyMembers()
     {
+        if (currentLobbyId == 0)
+            return null;
         return lobbyManager.GetMemberUsers(currentLobbyId);
     }
 
@@ -203,6 +235,10 @@ public class DiscordLobbyService : MonoBehaviour
     public bool IsThereSpaceLeft()
     {
         return lobbyManager.MemberCount(currentLobbyId) < lobbyManager.GetLobby(currentLobbyId).Capacity;
+    }
+    public bool IsTheHost()
+    {
+        return currentOwnerId == 0 || userManager.GetCurrentUser().Id == currentOwnerId;
     }
 
     //Functions for this script
@@ -248,7 +284,7 @@ public class DiscordLobbyService : MonoBehaviour
             }
             else
             {
-                Debug.Log(newResult, gameObject);
+                //Debug.Log(newResult, gameObject);
             }
         });
     }
@@ -262,7 +298,9 @@ public class DiscordLobbyService : MonoBehaviour
         // Next, deterministically open our channels
         // Reliable on 0, unreliable on 1
         lobbyManager.OpenNetworkChannel(lobbyId, 0, true);
-        lobbyManager.OpenNetworkChannel(lobbyId, 1, false);
+        lobbyManager.OpenNetworkChannel(lobbyId, 1, true);
+        lobbyManager.OpenNetworkChannel(lobbyId, 2, true);
+        lobbyManager.OpenNetworkChannel(lobbyId, 3, true);
         // We're ready to go!
     }
     private void FetchMemberAvatar(long userId)
@@ -274,6 +312,26 @@ public class DiscordLobbyService : MonoBehaviour
 
 
         });
+    }
+    public void SendNetworkMessageToHost(byte channelId, byte[] data)
+    {
+        if (currentLobbyId == 0)
+            return;
+        lobbyManager.SendNetworkMessage(currentLobbyId, currentOwnerId, channelId, data);
+    }
+
+    public bool SendNetworkMessageToClients(byte channelId, byte[] data)
+    {
+
+        if (currentLobbyId == 0)
+            return false;
+
+        foreach (var item in lobbyManager.GetMemberUsers(currentLobbyId))
+        {
+            if(item.Id != currentOwnerId)
+                lobbyManager.SendNetworkMessage(currentLobbyId, item.Id, channelId, data);
+        }
+        return true;
     }
 
     public void SetMetaDataOfMember(long userid,string key,string value)

@@ -19,6 +19,9 @@ public class Ghost : Character
             tempCurrentController.GetComponent<Score>().AddToValue(50);
             SetCurrentController(other.GetCurrentController());
             other.SetCurrentController(tempCurrentController);
+
+            //TODO: Host sends out change of owner to clients
+
         }
     }
 }

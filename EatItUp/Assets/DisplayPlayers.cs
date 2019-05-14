@@ -40,7 +40,7 @@ public class DisplayPlayers : MonoBehaviour
             }
             
                 
-            portriaitPlayerViews[i++].SetUser(item.Username, "Score: " + score, Color.yellow, avatar);
+            portriaitPlayerViews[i++].SetUser(item.Username, "Score: " + score, avatar);
         }
         for (int j = i; j < portriaitPlayerViews.Count; j++)
         {

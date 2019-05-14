@@ -22,11 +22,10 @@ public class PortriaitPlayerView : MonoBehaviour
         defaultScore = score.text;
         defaultBorder = border.color;
     }
-    public void SetUser(string userName, string score ,Color borderColor ,Texture2D avatarImage)
+    public void SetUser(string userName, string score,Texture2D avatarImage = null)
     {
         this.userName.text = userName;
         this.score.text = score;
-        border.color = borderColor;
         Avatar.texture = avatarImage;
     }
     public void SetToDefault()

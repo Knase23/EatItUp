@@ -57,7 +57,7 @@ public class DiscordActivityService : MonoBehaviour
     {
         //Fires when a user asks to join the current user's game.
         Debug.Log(user.Username + " Request to Join");
-        DiscordLobbyService.INSTANCE.ConnectToLobby();
+        //DiscordLobbyService.INSTANCE.ConnectToLobby();
 
     }
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System;
 public class Movement : MonoBehaviour
 {
 
@@ -19,7 +19,6 @@ public class Movement : MonoBehaviour
     }
     public void Move(Vector3 dir)
     {
-        
         if (dir != Vector3.zero)
         {
             Direction = dir;
@@ -50,6 +49,38 @@ public class Movement : MonoBehaviour
         transform.position = spawnPoint;
         Direction = Vector3.zero;
     }
+    public struct MovmentData
+    {
+        public float x, y;
+        long id;
+        public MovmentData(float x, float y, long id)
+        {
+            this.x = x;
+            this.y = y;
+            this.id = id;
+        }
+        public MovmentData(byte[] data)
+        {
+            x = BitConverter.ToSingle(data, 0);
+            y = BitConverter.ToSingle(data, 4);
+            id = BitConverter.ToInt64(data, 8);
+        }
+        public byte[] ToBytes()
+        {
+            List<byte> vs = new List<byte>();
+            vs.AddRange(BitConverter.GetBytes(x));
+            vs.AddRange(BitConverter.GetBytes(y));
+            vs.AddRange(BitConverter.GetBytes(id));
+            //BitConverter.GetBytes()
+            return vs.ToArray();
+        }
+        public Vector3 GetPosition()
+        {
+            return new Vector2(x, y);
+        }
+
+    }
+
 }
 public struct MoveCommand
 {
@@ -108,4 +139,6 @@ public struct MoveCommand
 
         return true;
     }
+
+    
 }
