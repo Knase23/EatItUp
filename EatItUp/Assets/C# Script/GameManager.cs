@@ -62,13 +62,14 @@ public class GameManager : MonoBehaviour
     {
         long clientUserId = DiscordLobbyService.INSTANCE.currentOwnerId;
         int i = 0;
-        for (i = 0; i < localPlayers; i++)
-        {
-            controllers[i].id = clientUserId;
-            controllers[i].typ = InputController.TypeOfContoller.Local;
-            controllers[i].VerticalAxis = "Vertical" + (i + 1);
-            controllers[i].HorizontalAxis = "Horizontal" + (i + 1);
-        }
+        int controllerCOunter = 0;
+        //for (i = 0; i < localPlayers; i++)
+        //{
+        //    controllers[i].id = clientUserId;
+        //    controllers[i].typ = InputController.TypeOfContoller.Local;
+        //    controllers[i].VerticalAxis = "Vertical" + (i + 1);
+        //    controllers[i].HorizontalAxis = "Horizontal" + (i + 1);
+        //}
         IEnumerable<Discord.User> feel = DiscordLobbyService.INSTANCE.GetLobbyMembers();
         if (feel != null)
         {
@@ -77,7 +78,17 @@ public class GameManager : MonoBehaviour
                 if (item.Id != clientUserId)
                 {
                     controllers[i].id = item.Id;
-                    controllers[i++].typ = InputController.TypeOfContoller.Online;
+                    controllers[i].typ = InputController.TypeOfContoller.Online;
+                    controllers[i].VerticalAxis = string.Empty;
+                    controllers[i++].HorizontalAxis = string.Empty;
+                }
+                else
+                {
+                    controllers[i].id = item.Id;
+                    controllers[i].typ = InputController.TypeOfContoller.Local;
+                    controllers[i].VerticalAxis = "Vertical" + (controllerCOunter + 1);
+                    controllers[i++].HorizontalAxis = "Horizontal" + (controllerCOunter + 1);
+                    controllerCOunter++;
                 }
             }
         }

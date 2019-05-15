@@ -6,7 +6,7 @@ public abstract class Character : MonoBehaviour
 {
 
 
-    InputController currentController;
+    public InputController currentController;
     Movement movement;
 
     protected void OnStart()

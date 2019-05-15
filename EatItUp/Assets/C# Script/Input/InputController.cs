@@ -13,7 +13,7 @@ public class InputController : MonoBehaviour
     public Color color;
     Vector2 dir;
     MoveCommand previousMoveCommand;
-    InputData prev = new InputData();
+    InputData prev;
     Movement.MovmentData prevMove;
     private void Start()
     {
@@ -58,7 +58,7 @@ public class InputController : MonoBehaviour
                 if (data.x != prev.x || data.y != prev.y)
                 {
                     prev = data;
-                    Debug.Log("Want to Change direction");
+                    Debug.Log("Client wants to Change Direcion");
                     DiscordLobbyService.INSTANCE.SendNetworkMessageToHost(0, data.ToBytes());
                 }
             }
@@ -68,6 +68,9 @@ public class InputController : MonoBehaviour
     }
     public void SetDirection(InputData data)
     {
+        Debug.Log("Data X: " + data.x);
+        Debug.Log("Data X: " + data.y);
+
         dir = new Vector2(data.x, data.y);
     }
     public struct InputData

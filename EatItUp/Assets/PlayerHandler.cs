@@ -54,6 +54,17 @@ public class PlayerHandler : MonoBehaviour
             controller.id = idSelected[i];
             controller.controlledCharacter = playableChracters[orderdSelected[i++]];
             controller.controlledCharacter.SetCurrentController(controller);
+
+            if(controller.id == DiscordLobbyService.INSTANCE.GetCurrentUserId())
+            {
+                controller.VerticalAxis = "Vertical" + (0 + 1);
+                controller.HorizontalAxis = "Horizontal" + (0 + 1);
+            }
+            else
+            {
+                controller.VerticalAxis = string.Empty;
+                controller.HorizontalAxis = string.Empty;
+            }
         }
     }
     
@@ -81,6 +92,10 @@ public class PlayerHandler : MonoBehaviour
         }
 
         return null;
+    }
+    public InputController[] GetInputControllers()
+    {
+        return controllers;
     }
 
     public struct PlayerHandlerData

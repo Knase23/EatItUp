@@ -11,7 +11,7 @@ public class DiscordLobbyService : MonoBehaviour
 
     public LobbyManager lobbyManager;
 
-    UserManager userManager;
+    public UserManager userManager;
     public long currentLobbyId;
     public string currentSecret;
     public long currentOwnerId;
@@ -62,11 +62,14 @@ public class DiscordLobbyService : MonoBehaviour
     }
     private void LobbyManager_OnNetworkMessage(long lobbyId, long userId, byte channelId, byte[] data)
     {
+        Debug.Log("Got Messege");
+
         switch (channelId)
         {
             case 0:
                 Debug.Log(userId + "Wants To Move");
-                PlayerHandler.inst?.GetInputControllerFromUserId(userId).SetDirection(new InputController.InputData(data));
+                InputController.InputData convert = new InputController.InputData(data);
+                PlayerHandler.inst?.GetInputControllerFromUserId(convert.id).SetDirection(convert);
                 break;
             case 1:
                 Debug.Log(userId + "Wants you to change scene");
@@ -240,6 +243,10 @@ public class DiscordLobbyService : MonoBehaviour
     {
         return currentOwnerId == 0 || userManager.GetCurrentUser().Id == currentOwnerId;
     }
+    public long GetCurrentUserId()
+    {
+        return userManager.GetCurrentUser().Id;
+    }
 
     //Functions for this script
     private void SetCurrent(long lobbyId, string secret, long ownerId)
@@ -316,15 +323,24 @@ public class DiscordLobbyService : MonoBehaviour
     public void SendNetworkMessageToHost(byte channelId, byte[] data)
     {
         if (currentLobbyId == 0)
+        {
+            Debug.Log("Current log not set");
             return;
+        }
+
+        Debug.Log("Send Messege to Host");
         lobbyManager.SendNetworkMessage(currentLobbyId, currentOwnerId, channelId, data);
+
     }
 
     public bool SendNetworkMessageToClients(byte channelId, byte[] data)
     {
 
         if (currentLobbyId == 0)
+        {
+            Debug.Log("Current log not set");
             return false;
+        }
 
         foreach (var item in lobbyManager.GetMemberUsers(currentLobbyId))
         {
