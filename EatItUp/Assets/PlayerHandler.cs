@@ -59,11 +59,13 @@ public class PlayerHandler : MonoBehaviour
             {
                 controller.VerticalAxis = "Vertical" + (0 + 1);
                 controller.HorizontalAxis = "Horizontal" + (0 + 1);
+                controller.typ = InputController.TypeOfContoller.Local;
             }
             else
             {
                 controller.VerticalAxis = string.Empty;
                 controller.HorizontalAxis = string.Empty;
+                controller.typ = InputController.TypeOfContoller.Online;
             }
         }
     }

@@ -63,13 +63,12 @@ public class DiscordLobbyService : MonoBehaviour
     private void LobbyManager_OnNetworkMessage(long lobbyId, long userId, byte channelId, byte[] data)
     {
         Debug.Log("Got Messege");
-
         switch (channelId)
         {
             case 0:
                 Debug.Log(userId + "Wants To Move");
                 InputController.InputData convert = new InputController.InputData(data);
-                PlayerHandler.inst?.GetInputControllerFromUserId(convert.id).SetDirection(convert);
+                PlayerHandler.inst.GetInputControllerFromUserId(convert.id).SetDirection(convert);
                 break;
             case 1:
                 Debug.Log(userId + "Wants you to change scene");
@@ -128,8 +127,6 @@ public class DiscordLobbyService : MonoBehaviour
     {
         if (currentLobbyId == 0)
             return;
-
-        Debug.Log(numberOfLocalPlayersConnected);
         var transaction = lobbyManager.GetLobbyUpdateTransaction(currentLobbyId);
         transaction.SetCapacity(5 - numberOfLocalPlayersConnected);
         lobbyManager.UpdateLobby(currentLobbyId, transaction, (Result result) =>
@@ -259,7 +256,7 @@ public class DiscordLobbyService : MonoBehaviour
 
     IEnumerator LobbyTransaction()
     {
-        yield return new WaitForSecondsRealtime(0.5f);
+        yield return new WaitForSecondsRealtime(0.6f);
         NewLobbyTransaction();
         coroutine = null;
         yield break;
@@ -270,20 +267,20 @@ public class DiscordLobbyService : MonoBehaviour
         if (currentLobbyId == 0)
             return;
 
-        var newTxn = lobbyManager.GetLobbyUpdateTransaction(currentLobbyId);
+        var transaction = lobbyManager.GetLobbyUpdateTransaction(currentLobbyId);
 
         #region Set Meta Data For Lobby
         if (SceneManager.GetActiveScene().name == "Game")
         {
-            newTxn.SetLocked(true);
+            transaction.SetLocked(true);
         }
         else
         {
-            newTxn.SetLocked(false);
+            transaction.SetLocked(false);
         }
         #endregion
 
-        lobbyManager.UpdateLobby(currentLobbyId, newTxn, (newResult) =>
+        lobbyManager.UpdateLobby(currentLobbyId, transaction, (newResult) =>
         {
             if (newResult == Result.Ok)
             {
@@ -303,11 +300,11 @@ public class DiscordLobbyService : MonoBehaviour
         lobbyManager.ConnectNetwork(lobbyId);
 
         // Next, deterministically open our channels
-        // Reliable on 0, unreliable on 1
-        lobbyManager.OpenNetworkChannel(lobbyId, 0, true);
-        lobbyManager.OpenNetworkChannel(lobbyId, 1, true);
-        lobbyManager.OpenNetworkChannel(lobbyId, 2, true);
-        lobbyManager.OpenNetworkChannel(lobbyId, 3, true);
+        // Reliable on false, unreliable on true
+        lobbyManager.OpenNetworkChannel(lobbyId, 0, false);
+        lobbyManager.OpenNetworkChannel(lobbyId, 1, false);
+        lobbyManager.OpenNetworkChannel(lobbyId, 2, false);
+        lobbyManager.OpenNetworkChannel(lobbyId, 3, false);
         // We're ready to go!
     }
     private void FetchMemberAvatar(long userId)

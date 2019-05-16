@@ -20,6 +20,7 @@ public abstract class Character : MonoBehaviour
     public void SetCurrentController(InputController controller)
     {
         currentController = controller;
+        controller.typ = InputController.TypeOfContoller.Online;
         controller.controlledCharacter = this;
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.color = currentController.color;

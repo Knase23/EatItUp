@@ -73,6 +73,7 @@ public class InputController : MonoBehaviour
 
         dir = new Vector2(data.x, data.y);
     }
+
     public struct InputData
     {
         public short x, y;

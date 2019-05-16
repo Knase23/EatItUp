@@ -21,9 +21,8 @@ public class AIController : MonoBehaviour
     public MoveCommand GetMoveCommand(Movement movement)
     {
         MoveCommand command = new MoveCommand(Vector2.zero, movement);
-
         //Decicsion for the direction it wants to move
-
+        // Ai decides;
         return command;
     }
 
