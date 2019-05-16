@@ -52,7 +52,7 @@ public class Movement : MonoBehaviour
     public struct MovmentData
     {
         public float x, y;
-        long id;
+        public long id;
         public MovmentData(float x, float y, long id)
         {
             this.x = x;

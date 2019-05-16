@@ -16,7 +16,10 @@ public class Ghost : Character
         { 
             Character other = collision.collider.GetComponent<Character>();
             InputController tempCurrentController = GetCurrentController();
+
             tempCurrentController.GetComponent<Score>().AddToValue(50);
+
+
             SetCurrentController(other.GetCurrentController());
             other.SetCurrentController(tempCurrentController);
 

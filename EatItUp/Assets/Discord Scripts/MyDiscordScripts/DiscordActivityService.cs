@@ -8,6 +8,7 @@ public class DiscordActivityService : MonoBehaviour
     public static DiscordActivityService INSTANCE;
 
     ActivityManager manager;
+    Activity current;
     private void Awake()
     {
         if (INSTANCE)
@@ -41,10 +42,15 @@ public class DiscordActivityService : MonoBehaviour
         manager.OnActivityJoin += Manager_OnActivityJoin;
         manager.OnActivityJoinRequest += Manager_OnActivityJoinRequest;
         manager.OnActivitySpectate += Manager_OnActivitySpectate;
+        Activity(new ActivityInformation(GameManager.INSTANCE.GetCurrentGameState()));
+    }
+    public void Update()
+    {
+        Activity(new ActivityInformation(GameManager.INSTANCE.GetCurrentGameState()));
     }
     public void OnLobbyUpdate(long lobbyId)
     {
-        Activity(new ActivityInformation(GameManager.INSTANCE.GetCurrentGameState(), "Testing"));
+       Activity(new ActivityInformation(GameManager.INSTANCE.GetCurrentGameState()));
     }
 
     #region Subscribe Functions
@@ -57,6 +63,13 @@ public class DiscordActivityService : MonoBehaviour
     {
         //Fires when a user asks to join the current user's game.
         Debug.Log(user.Username + " Request to Join");
+        
+        
+        //SendRequestReply(user.Id);
+       
+        //Save user until 
+
+
         //DiscordLobbyService.INSTANCE.ConnectToLobby();
 
     }
@@ -73,7 +86,20 @@ public class DiscordActivityService : MonoBehaviour
         Debug.Log(user.Username + (type == ActivityActionType.Join ? " wants to Join" : " wants to Spectating"));
     }
     #endregion
-
+    public void Activity(Activity activity)
+    {
+        manager.UpdateActivity(activity, (result) =>
+        {
+            if (result == Result.Ok)
+            {
+                //Debug.Log("Succeded with Updating activity");
+            }
+            else
+            {
+                Debug.LogError(result);
+            }
+        });
+    }
     public void Activity(ActivityInformation information, TimeStampInformation timeStamp = new TimeStampInformation(), AssetInformation asset = new AssetInformation())
     {
         Activity activity = new Activity()
@@ -93,6 +119,7 @@ public class DiscordActivityService : MonoBehaviour
                 End = timeStamp.EndStamp
             };
         }
+        
         activity.Assets = new ActivityAssets()
         {
             LargeImage = asset.LargeImageKey,
@@ -104,7 +131,7 @@ public class DiscordActivityService : MonoBehaviour
         DiscordLobbyService ls = DiscordLobbyService.INSTANCE;
 
         Lobby lob = ls.GetLobby();
-        if (lob.Id != 0 && !lob.Locked)
+        if (ls.currentLobbyId != 0 && !lob.Locked)
         {
             activity.Party = new ActivityParty()
             {
@@ -127,17 +154,8 @@ public class DiscordActivityService : MonoBehaviour
         }
         #endregion
 
-        manager.UpdateActivity(activity, (result) =>
-        {
-            if (result == Result.Ok)
-            {
-                //Debug.Log("Succeded with Updating activity");
-            }
-            else
-            {
-                Debug.LogError(result);
-            }
-        });
+        current = activity;
+        Activity(current);
     }
     public void Invite(User user)
     {
@@ -157,6 +175,36 @@ public class DiscordActivityService : MonoBehaviour
     {
         DiscordLobbyService.INSTANCE.ConnectToLobbyWithActivitySecret(secret);
     }
+    public void SendRequestReply(long userId)
+    {
+        manager.SendRequestReply(userId, ActivityJoinRequestReply.Yes, (result) =>
+          {
+              if (result == Result.Ok)
+              {
+                  //Debug.Log("Succeded with Updating activity");
+              }
+              else
+              {
+                  Debug.LogError(result);
+              }
+          });
+    }
+
+    public void AcceptInvite(long userId)
+    {
+        manager.AcceptInvite(userId, (result) =>
+        {
+            if (result == Discord.Result.Ok)
+            {
+                Debug.Log("Success!");
+            }
+            else
+            {
+                Debug.Log("Failed");
+            }
+        });
+    }
+
     #region Structs for Service
     public struct ActivityInformation
     {
@@ -186,7 +234,7 @@ public class DiscordActivityService : MonoBehaviour
         public string SmallImageKey;
         public string SmallImageText;
 
-        public AssetInformation(string largeImageKey = "None", string largeImageText = "", string smallImageKey = "None", string smallImageText = "")
+        public AssetInformation(string largeImageKey = "BasicIcon", string largeImageText = "Eat It, Chase It", string smallImageKey = "None", string smallImageText = "")
         {
             LargeImageKey = largeImageKey;
             LargeImageText = largeImageText;

@@ -78,7 +78,7 @@ public class DiscordLobbyService : MonoBehaviour
             case 2:
                 Debug.Log(userId + "Wants you to change position of a object");
                 Movement.MovmentData movmentData = new Movement.MovmentData(data);
-                Transform theThingToMove = PlayerHandler.inst?.GetInputControllerFromUserId(userId).controlledCharacter.transform; //= movmentData.GetPosition();
+                Transform theThingToMove = PlayerHandler.inst?.GetInputControllerFromUserId(movmentData.id).controlledCharacter.transform; //= movmentData.GetPosition();
                 theThingToMove.position = movmentData.GetPosition();
                 break;
             case 3:
@@ -152,6 +152,7 @@ public class DiscordLobbyService : MonoBehaviour
                 SetCurrent(0, string.Empty, 0);
             }
         });
+        DiscordActivityService.INSTANCE.Activity(new DiscordActivityService.ActivityInformation(GameManager.INSTANCE.GetCurrentGameState()));
     }
 
     public void ConnectToLobby()
@@ -325,7 +326,6 @@ public class DiscordLobbyService : MonoBehaviour
             return;
         }
 
-        Debug.Log("Send Messege to Host");
         lobbyManager.SendNetworkMessage(currentLobbyId, currentOwnerId, channelId, data);
 
     }

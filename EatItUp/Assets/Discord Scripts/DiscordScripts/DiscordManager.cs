@@ -25,7 +25,7 @@ public class DiscordManager : MonoBehaviour
     void Start()
     {
         System.Environment.SetEnvironmentVariable("DISCORD_INSTANCE_ID", "1");
-        var discord0 = new Discord.Discord(ApplicationId, (System.UInt64)Discord.CreateFlags.Default);
+        //var discord0 = new Discord.Discord(ApplicationId, (System.UInt64)Discord.CreateFlags.Default);
 
         //// This makes the SDK connect to PTB
 #if UNITY_EDITOR

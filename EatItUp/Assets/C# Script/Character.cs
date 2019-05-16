@@ -20,7 +20,13 @@ public abstract class Character : MonoBehaviour
     public void SetCurrentController(InputController controller)
     {
         currentController = controller;
-        controller.typ = InputController.TypeOfContoller.Online;
+
+        //if(!GameManager.INSTANCE.IsTheHost())
+        //    controller.typ = InputController.TypeOfContoller.Online;
+
+        //if (controller.id == DiscordLobbyService.INSTANCE.GetCurrentUserId())
+        //    controller.typ = InputController.TypeOfContoller.Local;
+
         controller.controlledCharacter = this;
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.color = currentController.color;

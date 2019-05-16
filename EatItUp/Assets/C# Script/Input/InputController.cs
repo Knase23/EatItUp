@@ -13,7 +13,6 @@ public class InputController : MonoBehaviour
     public Color color;
     Vector2 dir;
     MoveCommand previousMoveCommand;
-    InputData prev;
     Movement.MovmentData prevMove;
     private void Start()
     {
@@ -21,12 +20,13 @@ public class InputController : MonoBehaviour
     }
     private void Update()
     {
-
         if (typ == TypeOfContoller.Local)
             dir = new Vector2(Input.GetAxisRaw(HorizontalAxis), Input.GetAxisRaw(VerticalAxis));
 
+
         if (GameManager.INSTANCE.IsTheHost())
         {
+            // What the Host whil do.
             MoveCommand command = new MoveCommand(dir, controlledCharacter.GetMovement());
             if (typ == TypeOfContoller.AI)
                 command = AI.GetMoveCommand(controlledCharacter.GetMovement());
@@ -40,36 +40,38 @@ public class InputController : MonoBehaviour
             {
                 previousMoveCommand.Do();
             }
+
+
+
             Movement.MovmentData movmentData = new Movement.MovmentData(controlledCharacter.transform.position.x, controlledCharacter.transform.position.y, id);
             if (prevMove.x != movmentData.x || prevMove.y != movmentData.y)
             {
                 prevMove = movmentData;
-                
-                if(DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(2, movmentData.ToBytes()))
+
+                if (DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(2, movmentData.ToBytes()))
                     Debug.Log("Update clients, Charachter Position");
 
             }
         }
         else
         {
+            // Client
             if (typ == TypeOfContoller.Local)
             {
                 InputData data = new InputData((short)Mathf.RoundToInt(dir.x), (short)Mathf.RoundToInt(dir.y), id);
-                if (data.x != prev.x || data.y != prev.y)
-                {
-                    prev = data;
-                    Debug.Log("Client wants to Change Direcion");
-                    DiscordLobbyService.INSTANCE.SendNetworkMessageToHost(0, data.ToBytes());
-                }
+
+
+                DiscordLobbyService.INSTANCE.SendNetworkMessageToHost(0, data.ToBytes());
+
             }
-                //Send Messege to host to update this player
+            //Send Messege to host to update this player
         }
 
     }
     public void SetDirection(InputData data)
     {
         Debug.Log("Data X: " + data.x);
-        Debug.Log("Data X: " + data.y);
+        Debug.Log("Data Y: " + data.y);
 
         dir = new Vector2(data.x, data.y);
     }

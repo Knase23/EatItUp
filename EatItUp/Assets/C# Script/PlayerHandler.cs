@@ -55,10 +55,10 @@ public class PlayerHandler : MonoBehaviour
             controller.controlledCharacter = playableChracters[orderdSelected[i++]];
             controller.controlledCharacter.SetCurrentController(controller);
 
-            if(controller.id == DiscordLobbyService.INSTANCE.GetCurrentUserId())
+            if(DiscordLobbyService.INSTANCE.currentLobbyId == 0 || controller.id == DiscordLobbyService.INSTANCE.GetCurrentUserId())
             {
-                controller.VerticalAxis = "Vertical" + (0 + 1);
-                controller.HorizontalAxis = "Horizontal" + (0 + 1);
+                controller.VerticalAxis = "Vertical" + (i);
+                controller.HorizontalAxis = "Horizontal" + (i);
                 controller.typ = InputController.TypeOfContoller.Local;
             }
             else
