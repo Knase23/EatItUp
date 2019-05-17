@@ -18,11 +18,14 @@ public class Ghost : Character
             InputController tempCurrentController = GetCurrentController();
 
             tempCurrentController.GetComponent<Score>().AddToValue(50);
-
-
             SetCurrentController(other.GetCurrentController());
             other.SetCurrentController(tempCurrentController);
 
+            if (GameManager.INSTANCE.IsTheHost())
+            {
+                PlayerHandler.inst.ResetCharactersPosition();
+                //PlayerHandler.inst.SyncInputControllers();
+            }
             //TODO: Host sends out change of owner to clients
 
         }

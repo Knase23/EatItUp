@@ -64,7 +64,8 @@ public class DisplayPlayers : MonoBehaviour
                 }
                 catch (System.Exception)
                 {
-                    DiscordLobbyService.INSTANCE.SetMetaDataOfMember(item.Id, "Score", score);
+                    if (GameManager.INSTANCE.IsTheHost())
+                        DiscordLobbyService.INSTANCE.SetMetaDataOfMember(item.Id, "Score", score);
                 }
 
 
@@ -103,7 +104,8 @@ public class DisplayPlayers : MonoBehaviour
             }
             catch (System.Exception)
             {
-                DiscordLobbyService.INSTANCE.SetMetaDataOfMember(user.Id, "Score", score);
+                if (GameManager.INSTANCE.IsTheHost())
+                    DiscordLobbyService.INSTANCE.SetMetaDataOfMember(user.Id, "Score", score);
             }
 
 
@@ -115,7 +117,10 @@ public class DisplayPlayers : MonoBehaviour
         }
 
     }
-
+    /// <summary>
+    /// Gets the Avatar for a user, so it can later be used;
+    /// </summary>
+    /// <param name="userId"></param>
     private void FetchMemberAvatar(long userId)
     {
         DiscordManager.INSTANCE.GetDiscord().GetImageManager().Fetch(Discord.ImageHandle.User(userId), (result, handleResult) =>

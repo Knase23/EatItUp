@@ -13,7 +13,7 @@ public class InputController : MonoBehaviour
     public Color color;
     Vector2 dir;
     MoveCommand previousMoveCommand;
-    Movement.MovmentData prevMove;
+    InputData latestInputUpdate;
     private void Start()
     {
         AI = GetComponent<AIController>();
@@ -39,19 +39,7 @@ public class InputController : MonoBehaviour
             else
             {
                 previousMoveCommand.Do();
-            }
-
-
-
-            Movement.MovmentData movmentData = new Movement.MovmentData(controlledCharacter.transform.position.x, controlledCharacter.transform.position.y, id);
-            if (prevMove.x != movmentData.x || prevMove.y != movmentData.y)
-            {
-                prevMove = movmentData;
-
-                if (DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(2, movmentData.ToBytes()))
-                    Debug.Log("Update clients, Charachter Position");
-
-            }
+            }  
         }
         else
         {
@@ -59,10 +47,12 @@ public class InputController : MonoBehaviour
             if (typ == TypeOfContoller.Local)
             {
                 InputData data = new InputData((short)Mathf.RoundToInt(dir.x), (short)Mathf.RoundToInt(dir.y), id);
-
-
-                DiscordLobbyService.INSTANCE.SendNetworkMessageToHost(0, data.ToBytes());
-
+                if (latestInputUpdate.x != data.x || latestInputUpdate.y != data.y)
+                {
+                    latestInputUpdate = data;
+                    if (DiscordLobbyService.INSTANCE.SendNetworkMessageToHost(0, data.ToBytes()))
+                        Debug.Log("Send Input to Host");
+                }
             }
             //Send Messege to host to update this player
         }
@@ -72,7 +62,6 @@ public class InputController : MonoBehaviour
     {
         Debug.Log("Data X: " + data.x);
         Debug.Log("Data Y: " + data.y);
-
         dir = new Vector2(data.x, data.y);
     }
 

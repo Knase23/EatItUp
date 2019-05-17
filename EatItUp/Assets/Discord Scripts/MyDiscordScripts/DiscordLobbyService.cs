@@ -58,7 +58,7 @@ public class DiscordLobbyService : MonoBehaviour
 
     private void LobbyManager_OnLobbyUpdate(long lobbyId)
     {
-
+        
     }
     private void LobbyManager_OnNetworkMessage(long lobbyId, long userId, byte channelId, byte[] data)
     {
@@ -66,25 +66,24 @@ public class DiscordLobbyService : MonoBehaviour
         switch (channelId)
         {
             case 0:
-                Debug.Log(userId + "Wants To Move");
-                InputController.InputData convert = new InputController.InputData(data);
-                PlayerHandler.inst.GetInputControllerFromUserId(convert.id).SetDirection(convert);
+                InputController.InputData inputData = new InputController.InputData(data);
+                Debug.Log("Input from: "+ inputData.id);
+                PlayerHandler.inst?.SetInputOnController(inputData);
                 break;
             case 1:
-                Debug.Log(userId + "Wants you to change scene");
+                //Debug.Log("Host changed scene");
                 GameManager.LoadSceneData sceneToLoad = new GameManager.LoadSceneData(data);
                 GameManager.INSTANCE.LoadScene(sceneToLoad.scene);
                 break;
             case 2:
-                Debug.Log(userId + "Wants you to change position of a object");
-                Movement.MovmentData movmentData = new Movement.MovmentData(data);
-                Transform theThingToMove = PlayerHandler.inst?.GetInputControllerFromUserId(movmentData.id).controlledCharacter.transform; //= movmentData.GetPosition();
-                theThingToMove.position = movmentData.GetPosition();
+                //Debug.Log("Update position of Character");
+                Movement.MovementData movementData = new Movement.MovementData(data);
+                PlayerHandler.inst?.SetPositionOfCharacter(movementData);
                 break;
             case 3:
-                Debug.Log(userId +"Do this Stupid thing");
+                //Debug.Log("Sync InputControllers");
                 PlayerHandler.PlayerHandlerData handlerData = new PlayerHandler.PlayerHandlerData(data);
-                PlayerHandler.inst.SetAllPlayers(handlerData.orderSelected,handlerData.orderOfId);
+                PlayerHandler.inst?.SetAllPlayers(handlerData.orderSelected,handlerData.orderOfId);
                 break;
             default:
                 Debug.Log(userId + "Sendet messege not reqognized");
@@ -108,15 +107,7 @@ public class DiscordLobbyService : MonoBehaviour
         lobbyManager.CreateLobby(txn, (Result result, ref Lobby lobby) =>
         {
             SetCurrent(lobby.Id, lobby.Secret, lobby.OwnerId);
-            try
-            {
-                InitNetworking(lobby.Id);
-            }
-            catch (ResultException result2)
-            {
-                Debug.Log(result2);
-            }
-
+            InitNetworking(lobby.Id);
             NewLobbyTransaction();
 
         });
@@ -183,7 +174,7 @@ public class DiscordLobbyService : MonoBehaviour
     {
         lobbyManager.ConnectLobbyWithActivitySecret(activitySecret, (Result result, ref Lobby lobby) =>
         {
-            Debug.Log("ConnectToLobbyThroughSecret");
+            //Debug.Log("ConnectToLobbyThroughSecret");
             if (result == Result.Ok)
             {
                 InitNetworking(lobby.Id);
@@ -301,7 +292,7 @@ public class DiscordLobbyService : MonoBehaviour
         lobbyManager.ConnectNetwork(lobbyId);
 
         // Next, deterministically open our channels
-        // Reliable on false, unreliable on true
+        // Reliable on true, unreliable on false
         lobbyManager.OpenNetworkChannel(lobbyId, 0, false);
         lobbyManager.OpenNetworkChannel(lobbyId, 1, false);
         lobbyManager.OpenNetworkChannel(lobbyId, 2, false);
@@ -314,20 +305,28 @@ public class DiscordLobbyService : MonoBehaviour
         {
             if (result != Discord.Result.Ok)
                 Debug.Log(result);
-
-
         });
     }
-    public void SendNetworkMessageToHost(byte channelId, byte[] data)
+    public bool SendNetworkMessageToHost(byte channelId, byte[] data)
     {
         if (currentLobbyId == 0)
         {
             Debug.Log("Current log not set");
-            return;
+            return false;
         }
 
-        lobbyManager.SendNetworkMessage(currentLobbyId, currentOwnerId, channelId, data);
-
+        try
+        {
+            lobbyManager.SendNetworkMessage(currentLobbyId, currentOwnerId, channelId, data);
+            return true;
+        }
+        catch (ResultException res)
+        {
+            Debug.Log(res);
+            return false;
+        }
+        
+        
     }
 
     public bool SendNetworkMessageToClients(byte channelId, byte[] data)
@@ -335,7 +334,6 @@ public class DiscordLobbyService : MonoBehaviour
 
         if (currentLobbyId == 0)
         {
-            Debug.Log("Current log not set");
             return false;
         }
 

@@ -76,7 +76,7 @@ public class DiscordActivityService : MonoBehaviour
 
     private void Manager_OnActivityJoin(string secret)
     {
-        Debug.Log("Fires when a user accepts a game chat invite or recives confirmation from Asking to Join");
+        //Debug.Log("Fires when a user accepts a game chat invite or recives confirmation from Asking to Join");
         DiscordLobbyService.INSTANCE.ConnectToLobbyWithActivitySecret(secret);
     }
 
@@ -84,6 +84,9 @@ public class DiscordActivityService : MonoBehaviour
     {
         //Fires when the user receives a join or spectate invite.
         Debug.Log(user.Username + (type == ActivityActionType.Join ? " wants to Join" : " wants to Spectating"));
+
+        //Create a Popup with Yes and No
+        // Saves the user and Type in the Popup
     }
     #endregion
     public void Activity(Activity activity)

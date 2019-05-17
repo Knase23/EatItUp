@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class Character : MonoBehaviour
 {
 
-
+    public long id;
     public InputController currentController;
     Movement movement;
 
@@ -17,24 +17,38 @@ public abstract class Character : MonoBehaviour
     {
         return movement;
     }
+    private void FixedUpdate()
+    {
+        if(GameManager.INSTANCE.IsTheHost())
+        {
+            Movement.MovementData movmentData = new Movement.MovementData(transform.position.x, transform.position.y, transform.rotation.eulerAngles.z, id);
+            if (movement.CheckIfDiffrentLocation(movmentData))
+            {
+                movement.SetLatestUpdatedPosition(movmentData);
+                if (DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(2, movmentData.ToBytes()))
+                {
+                    //Debug.Log("Update clients, Charachter Position");
+                }
+            }
+        }
+    }
+    public void SetPosition(float x, float y)
+    {
+        transform.position = new Vector3(x, y);
+    }
+    public void SetRotation(float z)
+    {
+        transform.rotation = Quaternion.Euler(0, 0, z); ;
+    }
     public void SetCurrentController(InputController controller)
     {
         currentController = controller;
-
-        //if(!GameManager.INSTANCE.IsTheHost())
-        //    controller.typ = InputController.TypeOfContoller.Online;
-
-        //if (controller.id == DiscordLobbyService.INSTANCE.GetCurrentUserId())
-        //    controller.typ = InputController.TypeOfContoller.Local;
-
         controller.controlledCharacter = this;
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.color = currentController.color;
 
         if (tag == "Pac")
             PlayerHandler.inst.SetCurrentHolderOfPac(controller);
-
-        PlayerHandler.inst.ResetCharactersPosition();
     }
     public InputController GetCurrentController()
     {

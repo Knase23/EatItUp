@@ -4,13 +4,14 @@ using UnityEngine;
 using System;
 public class Movement : MonoBehaviour
 {
-
+  
     public Vector3 Direction;
     [Range(1,10)]
     public float speed;
     public bool pac;
     Vector3 spawnPoint;
     Rigidbody2D rigidbody2d;
+    MovementData latestUpdatedPosition;
     // Start is called before the first frame update
     void Start()
     {
@@ -43,41 +44,48 @@ public class Movement : MonoBehaviour
                 transform.rotation = Quaternion.Euler(0, 0, 0);
         }
     }
+    public bool CheckIfDiffrentLocation(MovementData data)
+    {
+        return latestUpdatedPosition.x != data.x || latestUpdatedPosition.y != data.y;
+    }
+    public void SetLatestUpdatedPosition(MovementData data)
+    {
+        latestUpdatedPosition = data;
+    }
 
     public void TeleportToSpawnPoint()
     {
         transform.position = spawnPoint;
         Direction = Vector3.zero;
     }
-    public struct MovmentData
+    public struct MovementData
     {
-        public float x, y;
-        public long id;
-        public MovmentData(float x, float y, long id)
+        public float x, y,rotationZ;
+        public long characterId;
+        public MovementData(float x, float y, float rotationZ, long characterId)
         {
             this.x = x;
             this.y = y;
-            this.id = id;
+            this.rotationZ = rotationZ;
+            this.characterId = characterId;
         }
-        public MovmentData(byte[] data)
+        public MovementData(byte[] data)
         {
             x = BitConverter.ToSingle(data, 0);
             y = BitConverter.ToSingle(data, 4);
-            id = BitConverter.ToInt64(data, 8);
+            rotationZ = BitConverter.ToSingle(data, 8); ;
+            characterId = BitConverter.ToInt64(data, 12);
         }
         public byte[] ToBytes()
         {
             List<byte> vs = new List<byte>();
             vs.AddRange(BitConverter.GetBytes(x));
             vs.AddRange(BitConverter.GetBytes(y));
-            vs.AddRange(BitConverter.GetBytes(id));
+            vs.AddRange(BitConverter.GetBytes(rotationZ));
+            vs.AddRange(BitConverter.GetBytes(characterId));
             //BitConverter.GetBytes()
             return vs.ToArray();
-        }
-        public Vector3 GetPosition()
-        {
-            return new Vector2(x, y);
-        }
+        }    
 
     }
 

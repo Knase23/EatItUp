@@ -27,7 +27,8 @@ public class Score : MonoBehaviour
         value += amount;
         playerView.SetScoreText(value);
         //Update Value in key for player
-        DiscordLobbyService.INSTANCE.SetMetaDataOfMember(controller.id, "Score", value.ToString());
+        if(GameManager.INSTANCE.IsTheHost())
+            DiscordLobbyService.INSTANCE.SetMetaDataOfMember(controller.id, "Score", value.ToString());
 
     }
     public void UpdateBasedOnLobbyMemeber()
