@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     {
         LoadSceneData data = new LoadSceneData(scene);
         if(IsTheHost())
-            DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(1, data.ToBytes());
+            DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(NetworkChannel.LOADSCENE, data.ToBytes());
 
         SceneManager.LoadScene(scene);
     }
@@ -63,13 +63,6 @@ public class GameManager : MonoBehaviour
         long clientUserId = DiscordLobbyService.INSTANCE.currentOwnerId;
         int i = 0;
         int controllerCOunter = 1;
-        //for (i = 0; i < localPlayers; i++)
-        //{
-        //    controllers[i].id = clientUserId;
-        //    controllers[i].typ = InputController.TypeOfContoller.Local;
-        //    controllers[i].VerticalAxis = "Vertical" + (i + 1);
-        //    controllers[i].HorizontalAxis = "Horizontal" + (i + 1);
-        //}
         IEnumerable<Discord.User> feel = DiscordLobbyService.INSTANCE.GetLobbyMembers();
         if (feel != null)
         {

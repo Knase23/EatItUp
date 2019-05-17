@@ -25,7 +25,7 @@ public abstract class Character : MonoBehaviour
             if (movement.CheckIfDiffrentLocation(movmentData))
             {
                 movement.SetLatestUpdatedPosition(movmentData);
-                if (DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(2, movmentData.ToBytes()))
+                if (DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(NetworkChannel.CHARACTER_POSITION, movmentData.ToBytes()))
                 {
                     //Debug.Log("Update clients, Charachter Position");
                 }

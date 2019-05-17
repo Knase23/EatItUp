@@ -24,11 +24,14 @@ public class PlayerHandler : MonoBehaviour
         {
             charactherDictionary.Add(item.id, item);
         }
-
-
+        foreach (var controller in controllers)
+        {
+            if (controller.id != 0)
+                controllerDictionary.Add(controller.id, controller);
+        }
+        GameManager.INSTANCE.AssignPlayersToControllers(ref controllers);
         if (GameManager.INSTANCE.IsTheHost())
         {
-            GameManager.INSTANCE.AssignPlayersToControllers(ref controllers);
             List<int> selected = new List<int>();
             List<long> selectediD = new List<long>();
             //Randomize the Controllers Playercharacter
@@ -41,15 +44,12 @@ public class PlayerHandler : MonoBehaviour
 
                 selected.Add(rand);
                 selectediD.Add(controller.id);
-                if (controller.id != 0)
-                    controllerDictionary.Add(controller.id, controller);
             }
 
             SetAllPlayers(selected.ToArray(), selectediD.ToArray());
-            //TODO: Host sends sends a data that will
 
             PlayerHandlerData data = new PlayerHandlerData(selected.ToArray(), selectediD.ToArray());
-            DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(3, data.ToBytes());
+            DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(NetworkChannel.CONTROLLER_SYNC, data.ToBytes());
         }
 
     }
@@ -63,7 +63,7 @@ public class PlayerHandler : MonoBehaviour
             selected.Add(GetIndexOfCharacter(controller.controlledCharacter));
         }
         PlayerHandlerData data = new PlayerHandlerData(selected.ToArray(), selectediD.ToArray());
-        DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(3, data.ToBytes());
+        DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(NetworkChannel.CONTROLLER_SYNC, data.ToBytes());
     }
 
     public void SetAllPlayers(int[] orderdSelected, long[] idSelected)

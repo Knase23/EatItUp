@@ -11,7 +11,7 @@ public class InputController : MonoBehaviour
     public TypeOfContoller typ;
     public string HorizontalAxis = "Horizontal", VerticalAxis = "Vertical";
     public Color color;
-    Vector2 dir;
+    Vector2 dir = new Vector2();
     MoveCommand previousMoveCommand;
     InputData latestInputUpdate;
     private void Start()
@@ -22,12 +22,13 @@ public class InputController : MonoBehaviour
     {
         if (typ == TypeOfContoller.Local)
             dir = new Vector2(Input.GetAxisRaw(HorizontalAxis), Input.GetAxisRaw(VerticalAxis));
-
+        
 
         if (GameManager.INSTANCE.IsTheHost())
         {
             // What the Host whil do.
             MoveCommand command = new MoveCommand(dir, controlledCharacter.GetMovement());
+
             if (typ == TypeOfContoller.AI)
                 command = AI.GetMoveCommand(controlledCharacter.GetMovement());
 
@@ -46,12 +47,11 @@ public class InputController : MonoBehaviour
             // Client
             if (typ == TypeOfContoller.Local)
             {
-                InputData data = new InputData((short)Mathf.RoundToInt(dir.x), (short)Mathf.RoundToInt(dir.y), id);
+                InputData data = new InputData(Input.GetAxisRaw(HorizontalAxis), Input.GetAxisRaw(VerticalAxis), id);
                 if (latestInputUpdate.x != data.x || latestInputUpdate.y != data.y)
                 {
                     latestInputUpdate = data;
-                    if (DiscordLobbyService.INSTANCE.SendNetworkMessageToHost(0, data.ToBytes()))
-                        Debug.Log("Send Input to Host");
+                    DiscordLobbyService.INSTANCE.SendNetworkMessageToAll(NetworkChannel.INPUT_DATA, latestInputUpdate.ToBytes());
                 }
             }
             //Send Messege to host to update this player
@@ -67,9 +67,9 @@ public class InputController : MonoBehaviour
 
     public struct InputData
     {
-        public short x, y;
+        public float x, y;
         public long id;
-        public InputData(short x, short y, long id)
+        public InputData(float x, float y, long id)
         {
             this.x = x;
             this.y = y;
@@ -77,17 +77,17 @@ public class InputController : MonoBehaviour
         }
         public InputData(byte[] data)
         {
-            x = BitConverter.ToInt16(data, 0);
-            y = BitConverter.ToInt16(data, 2);
-            id = BitConverter.ToInt64(data, 4);
+            x = BitConverter.ToSingle(data, 0);
+            y = BitConverter.ToSingle(data, 4);
+            id = BitConverter.ToInt64(data, 8);
         }
         public byte[] ToBytes()
         {
             List<byte> vs = new List<byte>();
+            
             vs.AddRange(BitConverter.GetBytes(x));
             vs.AddRange(BitConverter.GetBytes(y));
             vs.AddRange(BitConverter.GetBytes(id));
-            //BitConverter.GetBytes()
             return vs.ToArray();
         }
     }

@@ -44,6 +44,7 @@ public class DisplayPlayers : MonoBehaviour
         else
         {
             var imageManager = DiscordManager.INSTANCE.GetDiscord().GetImageManager();
+            
             int i = 0;
             foreach (var item in lobbyManager.GetMemberUsers(lobbyId))
             {
