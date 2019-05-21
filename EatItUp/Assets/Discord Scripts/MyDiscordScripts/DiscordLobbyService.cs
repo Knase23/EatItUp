@@ -61,7 +61,6 @@ public class DiscordLobbyService : MonoBehaviour
     }
     private void LobbyManager_OnNetworkMessage(long lobbyId, long userId, byte channelId, byte[] data)
     {
-        
         NetworkChannel channel = (NetworkChannel)channelId;
         Debug.Log("Got Messege from: " + userId + " on Channel: " + channel);
         switch (channel)

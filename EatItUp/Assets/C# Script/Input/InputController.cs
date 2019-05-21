@@ -18,6 +18,7 @@ public class InputController : MonoBehaviour
     {
         AI = GetComponent<AIController>();
     }
+    
     private void Update()
     {
         if (typ == TypeOfContoller.Local)
@@ -51,7 +52,7 @@ public class InputController : MonoBehaviour
                 if (latestInputUpdate.x != data.x || latestInputUpdate.y != data.y)
                 {
                     latestInputUpdate = data;
-                    DiscordLobbyService.INSTANCE.SendNetworkMessageToAll(NetworkChannel.INPUT_DATA, latestInputUpdate.ToBytes());
+                    DiscordLobbyService.INSTANCE.SendNetworkMessageToHost(NetworkChannel.INPUT_DATA, latestInputUpdate.ToBytes());
                 }
             }
             //Send Messege to host to update this player
@@ -60,8 +61,6 @@ public class InputController : MonoBehaviour
     }
     public void SetDirection(InputData data)
     {
-        Debug.Log("Data X: " + data.x);
-        Debug.Log("Data Y: " + data.y);
         dir = new Vector2(data.x, data.y);
     }
 
