@@ -15,7 +15,7 @@ public class DisplayPlayers : MonoBehaviour
 
     private void OnLobbyUpdate(long lobbyId)
     {
-
+        //TODO: There should be another way of updating the Displays for Players.
         if(PlayerHandler.inst)
         {
             var useManager = lobbyManager.GetMemberUsers(lobbyId);
@@ -77,10 +77,6 @@ public class DisplayPlayers : MonoBehaviour
                 portriaitPlayerViews[j].SetToDefault();
             }
         }
-
-
-
-
     }
 
     public void UpdateDisplayForId(Discord.User user , int index)

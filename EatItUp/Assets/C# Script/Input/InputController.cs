@@ -52,12 +52,11 @@ public class InputController : MonoBehaviour
                 if (latestInputUpdate.x != data.x || latestInputUpdate.y != data.y)
                 {
                     latestInputUpdate = data;
-                    DiscordLobbyService.INSTANCE.SendNetworkMessageToHost(NetworkChannel.INPUT_DATA, latestInputUpdate.ToBytes());
+                    Debug.Log(DiscordNetworkLayerService.INSTANCE.SendMessegeToOwnerOfLobby(NetworkChannel.INPUT_DATA, latestInputUpdate.ToBytes()));
                 }
             }
             //Send Messege to host to update this player
         }
-
     }
     public void SetDirection(InputData data)
     {

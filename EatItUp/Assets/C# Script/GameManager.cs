@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     {
         LoadSceneData data = new LoadSceneData(scene);
         if(IsTheHost())
-            DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(NetworkChannel.LOADSCENE, data.ToBytes());
+            DiscordNetworkLayerService.INSTANCE.SendMessegeToAllOthers(NetworkChannel.LOADSCENE, data.ToBytes());
 
         SceneManager.LoadScene(scene);
     }

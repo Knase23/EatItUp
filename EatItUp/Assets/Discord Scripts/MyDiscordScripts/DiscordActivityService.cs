@@ -50,7 +50,7 @@ public class DiscordActivityService : MonoBehaviour
     }
     public void OnLobbyUpdate(long lobbyId)
     {
-       Activity(new ActivityInformation(GameManager.INSTANCE.GetCurrentGameState()));
+        Activity(new ActivityInformation(GameManager.INSTANCE.GetCurrentGameState()));
     }
 
     #region Subscribe Functions
@@ -62,7 +62,7 @@ public class DiscordActivityService : MonoBehaviour
     private void Manager_OnActivityJoinRequest(ref User user)
     {
         //Fires when a user asks to join the current user's game.
-        Debug.Log(user.Username + " Request to Join");
+        //Debug.Log(user.Username + " Request to Join");
         
         
         //SendRequestReply(user.Id);

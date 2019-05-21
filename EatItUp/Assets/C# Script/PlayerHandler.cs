@@ -24,12 +24,12 @@ public class PlayerHandler : MonoBehaviour
         {
             charactherDictionary.Add(item.id, item);
         }
+        GameManager.INSTANCE.AssignPlayersToControllers(ref controllers);
         foreach (var controller in controllers)
         {
             if (controller.id != 0)
                 controllerDictionary.Add(controller.id, controller);
         }
-        GameManager.INSTANCE.AssignPlayersToControllers(ref controllers);
         if (GameManager.INSTANCE.IsTheHost())
         {
             List<int> selected = new List<int>();
@@ -49,7 +49,7 @@ public class PlayerHandler : MonoBehaviour
             SetAllPlayers(selected.ToArray(), selectediD.ToArray());
 
             PlayerHandlerData data = new PlayerHandlerData(selected.ToArray(), selectediD.ToArray());
-            DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(NetworkChannel.CONTROLLER_SYNC, data.ToBytes());
+            DiscordNetworkLayerService.INSTANCE.SendMessegeToAllOthers(NetworkChannel.CONTROLLER_SYNC, data.ToBytes());
         }
 
     }
@@ -63,7 +63,7 @@ public class PlayerHandler : MonoBehaviour
             selected.Add(GetIndexOfCharacter(controller.controlledCharacter));
         }
         PlayerHandlerData data = new PlayerHandlerData(selected.ToArray(), selectediD.ToArray());
-        DiscordLobbyService.INSTANCE.SendNetworkMessageToClients(NetworkChannel.CONTROLLER_SYNC, data.ToBytes());
+        DiscordNetworkLayerService.INSTANCE.SendMessegeToAllOthers(NetworkChannel.CONTROLLER_SYNC, data.ToBytes());
     }
 
     public void SetAllPlayers(int[] orderdSelected, long[] idSelected)
@@ -134,6 +134,7 @@ public class PlayerHandler : MonoBehaviour
     public bool SetInputOnController(InputController.InputData data)
     {
         InputController controller = null;
+
         if (!controllerDictionary.TryGetValue(data.id, out controller))
             return false;
 

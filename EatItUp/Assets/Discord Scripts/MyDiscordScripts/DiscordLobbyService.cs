@@ -35,62 +35,42 @@ public class DiscordLobbyService : MonoBehaviour
     {
         lobbyManager = DiscordManager.INSTANCE.GetDiscord().GetLobbyManager();
         userManager = DiscordManager.INSTANCE.GetDiscord().GetUserManager();
-        lobbyManager.OnLobbyUpdate += LobbyManager_OnLobbyUpdate;
+        lobbyManager.OnLobbyUpdate += OnLobbyUpdate;
         lobbyManager.OnLobbyUpdate += DiscordActivityService.INSTANCE.OnLobbyUpdate;
-        lobbyManager.OnNetworkMessage += LobbyManager_OnNetworkMessage;
-
+        lobbyManager.OnMemberConnect += OnMemberConnect;
+        lobbyManager.OnMemberUpdate += OnMemberUpdate;
+        lobbyManager.OnMemberDisconnect += OnMemberDisconnect;
     }
 
+    private void OnMemberConnect(long lobbyId, long userId)
+    {
+        if (userId != GetCurrentUserId() && lobbyManager.MemberMetadataCount(lobbyId, userId) >= 2)
+            DiscordNetworkLayerService.INSTANCE.EstablishConnectionWithMember(lobbyId, userId);
+    }
+    private void OnMemberUpdate(long lobbyId, long userId)
+    {
+        if(userId != GetCurrentUserId() && lobbyManager.MemberMetadataCount(lobbyId, userId) >= 2)
+            DiscordNetworkLayerService.INSTANCE.UpdateAPeer(lobbyId,userId);
+    }
+    private void OnMemberDisconnect(long lobbyId, long userId)
+    {
+        DiscordNetworkLayerService.INSTANCE.DisconnectPeer(userId);
+    }
 
     private void Update()
     {
         if (coroutine == null && currentLobbyId != 0)
         {
-            coroutine = StartCoroutine(LobbyTransaction());
+            coroutine = StartCoroutine(UpdateLobbyTransaction());
         }
     }
-
-    private void LateUpdate()
+    private void OnLobbyUpdate(long lobbyId)
     {
-        lobbyManager.FlushNetwork();
-    }
-
-    private void LobbyManager_OnLobbyUpdate(long lobbyId)
-    {
-        
-    }
-    private void LobbyManager_OnNetworkMessage(long lobbyId, long userId, byte channelId, byte[] data)
-    {
-        NetworkChannel channel = (NetworkChannel)channelId;
-        Debug.Log("Got Messege from: " + userId + " on Channel: " + channel);
-        switch (channel)
+        foreach (var member in GetLobbyMembers())
         {
-            case NetworkChannel.INPUT_DATA:
-                InputController.InputData inputData = new InputController.InputData(data);
-                PlayerHandler.inst?.SetInputOnController(inputData);
-                break;
-            case NetworkChannel.LOADSCENE:
-                GameManager.LoadSceneData sceneToLoad = new GameManager.LoadSceneData(data);
-                GameManager.INSTANCE.LoadScene(sceneToLoad.scene);
-                break;
-            case NetworkChannel.CHARACTER_POSITION:
-                Movement.MovementData movementData = new Movement.MovementData(data);
-                PlayerHandler.inst?.SetPositionOfCharacter(movementData);
-                break;
-            case NetworkChannel.CONTROLLER_SYNC:
-                PlayerHandler.PlayerHandlerData handlerData = new PlayerHandler.PlayerHandlerData(data);
-                PlayerHandler.inst?.SetAllPlayers(handlerData.orderSelected,handlerData.orderOfId);
-                break;
-            default:
-                Debug.Log(userId + "Sent messege was not reognized");
-                break;
+            if (member.Id != GetCurrentUserId() && lobbyManager.MemberMetadataCount(lobbyId, member.Id) >= 2)
+                DiscordNetworkLayerService.INSTANCE.EstablishConnectionWithMember(lobbyId, member.Id);
         }
-
-
-    }
-    private void OnDestroy()
-    {
-        //RemoveLobby();
     }
     // Functions to Use to Call from other scripts
     public void CreateLobby()
@@ -101,16 +81,12 @@ public class DiscordLobbyService : MonoBehaviour
         var txn = lobbyManager.GetLobbyCreateTransaction();
         txn.SetCapacity(5);
         txn.SetType(LobbyType.Public);
-        txn.SetMetadata("Something", "123");
         lobbyManager.CreateLobby(txn, (Result result, ref Lobby lobby) =>
         {
             SetCurrent(lobby.Id, lobby.Secret, lobby.OwnerId);
-            InitNetworking(lobby.Id);
-            NewLobbyTransaction();
-
+            DiscordNetworkLayerService.INSTANCE.SetMyPeerId();
+            NewUpdateLobbyTransaction();
         });
-
-
     }
     public void UpdateLobbySize(uint numberOfLocalPlayersConnected)
     {
@@ -165,17 +141,11 @@ public class DiscordLobbyService : MonoBehaviour
         var l = GetLobby();
         lobbyManager.ConnectLobby(l.Id, l.Secret, (Result result, ref Lobby lobby) =>
         {
-            //Debug.Log("ConnectToLobby");
             if (result == Result.Ok)
             {
-                Debug.Log("It worked?");
-                InitNetworking(lobby.Id);
                 SetCurrent(lobby.Id, lobby.Secret, lobby.OwnerId);
-                for (int i = 0; i < lobbyManager.MemberCount(lobby.Id); i++)
-                {
-                    var userId = lobbyManager.GetMemberUserId(lobby.Id, i);
-                    
-                }
+                DiscordNetworkLayerService.INSTANCE.SetMyPeerId();
+
             }
             else
             {
@@ -191,15 +161,8 @@ public class DiscordLobbyService : MonoBehaviour
             //Debug.Log("ConnectToLobbyThroughSecret");
             if (result == Result.Ok)
             {
-                InitNetworking(lobby.Id);
-
                 SetCurrent(lobby.Id, lobby.Secret, lobby.OwnerId);
-
-                for (int i = 0; i < lobbyManager.MemberCount(lobby.Id); i++)
-                {
-                    var userId = lobbyManager.GetMemberUserId(lobby.Id, i);
-                    //FetchMemberAvatar(userId);
-                }
+                DiscordNetworkLayerService.INSTANCE.SetMyPeerId();
             }
             else
             {
@@ -234,14 +197,6 @@ public class DiscordLobbyService : MonoBehaviour
 
 
     // Statements 
-    public bool IsInLobby()
-    {
-        return (currentLobbyId != 0);
-    }
-    public bool IsThereSpaceLeft()
-    {
-        return lobbyManager.MemberCount(currentLobbyId) < lobbyManager.GetLobby(currentLobbyId).Capacity;
-    }
     public bool IsTheHost()
     {
         return currentOwnerId == 0 || userManager.GetCurrentUser().Id == currentOwnerId;
@@ -260,15 +215,15 @@ public class DiscordLobbyService : MonoBehaviour
     }
 
 
-    IEnumerator LobbyTransaction()
+    IEnumerator UpdateLobbyTransaction()
     {
         yield return new WaitForSecondsRealtime(0.6f);
-        NewLobbyTransaction();
+        NewUpdateLobbyTransaction();
         coroutine = null;
         yield break;
     }
 
-    void NewLobbyTransaction()
+    void NewUpdateLobbyTransaction()
     {
         if (currentLobbyId == 0)
             return;
@@ -298,72 +253,6 @@ public class DiscordLobbyService : MonoBehaviour
             }
         });
     }
-    
-    // We can create a helper method to easily connect to the networking layer of the lobby
-    public void InitNetworking(System.Int64 lobbyId)
-    {
-        // First, connect to the lobby network layer
-        lobbyManager.ConnectNetwork(lobbyId);
-
-        // Next, deterministically open our channels
-        // Reliable on true, unreliable on false
-        lobbyManager.OpenNetworkChannel(lobbyId, (byte)NetworkChannel.INPUT_DATA, true);
-        lobbyManager.OpenNetworkChannel(lobbyId, (byte)NetworkChannel.LOADSCENE, true);
-        lobbyManager.OpenNetworkChannel(lobbyId, (byte)NetworkChannel.CHARACTER_POSITION, false);
-        lobbyManager.OpenNetworkChannel(lobbyId, (byte)NetworkChannel.CONTROLLER_SYNC, true);
-        // We're ready to go!
-    }
-    private void FetchMemberAvatar(long userId)
-    {
-        DiscordManager.INSTANCE.GetDiscord().GetImageManager().Fetch(Discord.ImageHandle.User(userId), (result, handleResult) =>
-        {
-            if (result != Discord.Result.Ok)
-                Debug.Log(result);
-        });
-    }
-    public bool SendNetworkMessageToHost(NetworkChannel channel, byte[] data)
-    {
-        if (currentLobbyId == 0)
-        {
-            Debug.Log("Current log not set");
-            return false;
-        }
-
-        Debug.Log("Send to: " + currentOwnerId + " on Channel: " + channel);
-        lobbyManager.SendNetworkMessage(currentLobbyId, currentOwnerId, (byte)channel, data);
-        return true;
-        
-    }
-    public bool SendNetworkMessageToAll(NetworkChannel channel, byte[] data)
-    {
-        if (currentLobbyId == 0)
-        {
-            return false;
-        }
-
-        foreach (var item in lobbyManager.GetMemberUsers(currentLobbyId))
-        {
-            Debug.Log("Send to: " + item.Id + " on Channel: " + channel);
-            lobbyManager.SendNetworkMessage(currentLobbyId, item.Id, (byte)channel, data);
-        }
-        return true;
-    }
-
-    public bool SendNetworkMessageToClients(NetworkChannel channel, byte[] data)
-    {
-
-        if (currentLobbyId == 0)
-        {
-            return false;
-        }
-
-        foreach (var item in lobbyManager.GetMemberUsers(currentLobbyId))
-        {
-            if(item.Id != currentOwnerId)
-                lobbyManager.SendNetworkMessage(currentLobbyId, item.Id, (byte)channel, data);
-        }
-        return true;
-    }
 
     public void SetMetaDataOfMember(long userid,string key,string value)
     {
@@ -378,16 +267,23 @@ public class DiscordLobbyService : MonoBehaviour
                    Debug.Log(result);
            });
     }
+    public void SetMyMetaData(string key, string value)
+    {
+        if(currentLobbyId == 0)
+        {
+            return;
+        }
+        var memberTransaction = lobbyManager.GetMemberUpdateTransaction(currentLobbyId, GetCurrentUserId());
+        memberTransaction.SetMetadata(key, value);
+        lobbyManager.UpdateMember(currentLobbyId, GetCurrentUserId(), memberTransaction, (result) =>
+        {
+            if (result != Result.Ok)
+                Debug.Log(result);
+        });
+        //Debug.Log("Setted: " + key + " : " + value);
+    }
     public string GetMetaDataOfMember(long userid,string key)
     {
         return lobbyManager.GetMemberMetadataValue(currentLobbyId, userid, key);
     }
-}
-public enum NetworkChannel
-{
-    INPUT_DATA = 1,
-    LOADSCENE,
-    CHARACTER_POSITION,
-    CONTROLLER_SYNC
-
 }
