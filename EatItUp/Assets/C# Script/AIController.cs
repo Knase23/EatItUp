@@ -6,24 +6,25 @@ public class AIController : MonoBehaviour
 {
 
     public GhostType behaviourAsGhost;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    AI aiCode;
 
     // Update is called once per frame
     void Update()
     {
-        
+        if(aiCode != null)
+            aiCode.Sensors();
     }
 
     public MoveCommand GetMoveCommand(Movement movement)
     {
-        MoveCommand command = new MoveCommand(Vector2.zero, movement);
-        //Decicsion for the direction it wants to move
-        // Ai decides;
-        return command;
+        if (aiCode != null)
+            return aiCode.DecisionOfMovement();
+
+        return new MoveCommand();
+    }
+    public void SetCharacter(Character character)
+    {
+        aiCode = new BlinkyAI(character);
     }
 
     public enum GhostType

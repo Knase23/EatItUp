@@ -225,7 +225,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ceb82af1d5003204a9a9a6d44cc1cd0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  portriaits: []
 --- !u!114 &144439051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -303,7 +302,7 @@ RectTransform:
   - {fileID: 216959260}
   - {fileID: 1876305544}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -537,6 +536,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de9c467ab2eb404b8514f09cb530533, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 4
+  memberId: 0
   userName: {fileID: 2018716135}
   score: {fileID: 1679139386}
   border: {fileID: 1512328989}
@@ -1709,50 +1710,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 735279876}
   m_CullTransparentMesh: 0
---- !u!1 &916432348
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 916432349}
-  - component: {fileID: 916432350}
-  m_Layer: 0
-  m_Name: ConnectPlayers
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &916432349
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 916432348}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.84471637, y: 0.64267164, z: -130.71094}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &916432350
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 916432348}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4712d7fb80fbb814f8fe99acf3bcda21, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  controllersConnected: 
 --- !u!1 &920388294
 GameObject:
   m_ObjectHideFlags: 0
@@ -1804,6 +1761,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de9c467ab2eb404b8514f09cb530533, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 2
+  memberId: 0
   userName: {fileID: 1640635099}
   score: {fileID: 735279878}
   border: {fileID: 189603097}
@@ -1821,7 +1780,7 @@ GameObject:
   - component: {fileID: 931981504}
   - component: {fileID: 931981503}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: ConnectState
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3035,6 +2994,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de9c467ab2eb404b8514f09cb530533, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 1
+  memberId: 0
   userName: {fileID: 969705007}
   score: {fileID: 1329482687}
   border: {fileID: 1915180918}
@@ -3103,7 +3064,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1512328987
 GameObject:
@@ -3388,6 +3349,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de9c467ab2eb404b8514f09cb530533, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 3
+  memberId: 0
   userName: {fileID: 1121034390}
   score: {fileID: 1189474140}
   border: {fileID: 503365667}
@@ -3997,7 +3960,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Host: 1
-  playerPortraits: {fileID: 144439049}
   localPlayers: 1
 --- !u!4 &1716048552
 Transform:
@@ -4064,6 +4026,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de9c467ab2eb404b8514f09cb530533, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 5
+  memberId: 0
   userName: {fileID: 588839094}
   score: {fileID: 650290235}
   border: {fileID: 339536005}

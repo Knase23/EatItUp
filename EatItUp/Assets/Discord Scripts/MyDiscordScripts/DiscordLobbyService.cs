@@ -201,6 +201,14 @@ public class DiscordLobbyService : MonoBehaviour
     {
         return currentOwnerId == 0 || userManager.GetCurrentUser().Id == currentOwnerId;
     }
+    public bool Offline()
+    {
+        return currentLobbyId == 0;
+    }
+    public bool Online()
+    {
+        return currentLobbyId != 0;
+    }
     public long GetCurrentUserId()
     {
         return userManager.GetCurrentUser().Id;

@@ -3794,6 +3794,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de9c467ab2eb404b8514f09cb530533, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 4
   userName: {fileID: 1120177192}
   score: {fileID: 14831186}
   border: {fileID: 1113727949}
@@ -8657,6 +8658,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de9c467ab2eb404b8514f09cb530533, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 5
   userName: {fileID: 554774998}
   score: {fileID: 39108565}
   border: {fileID: 1794653572}
@@ -9251,7 +9253,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd45228afeba9bd46b586673950da022, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
+  id: 3
+  memberId: 0
   AI: {fileID: 0}
   controlledCharacter: {fileID: 547591387}
   typ: 2
@@ -9270,6 +9273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b598d71766f1ffe4b8601608b1790bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 3
 --- !u!114 &590081682
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12943,6 +12947,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de9c467ab2eb404b8514f09cb530533, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 2
   userName: {fileID: 512025854}
   score: {fileID: 216013077}
   border: {fileID: 922874069}
@@ -19785,6 +19790,7 @@ GameObject:
   m_Component:
   - component: {fileID: 984136077}
   - component: {fileID: 984136078}
+  - component: {fileID: 984136079}
   m_Layer: 0
   m_Name: Players
   m_TagString: Untagged
@@ -19829,6 +19835,18 @@ MonoBehaviour:
   - {fileID: 547591387}
   - {fileID: 1190317033}
   - {fileID: 1136225380}
+--- !u!114 &984136079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 984136076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f54ee9cf74663342bd8bf08faed9f3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &993490296
 GameObject:
   m_ObjectHideFlags: 0
@@ -28967,7 +28985,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd45228afeba9bd46b586673950da022, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
+  id: 2
+  memberId: 0
   AI: {fileID: 0}
   controlledCharacter: {fileID: 278415828}
   typ: 2
@@ -28986,6 +29005,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b598d71766f1ffe4b8601608b1790bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 2
 --- !u!114 &1563604213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29558,6 +29578,7 @@ GameObject:
   - component: {fileID: 1617388664}
   - component: {fileID: 1617388663}
   - component: {fileID: 1617388662}
+  - component: {fileID: 1617388668}
   m_Layer: 0
   m_Name: Discord
   m_TagString: Untagged
@@ -29643,6 +29664,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1617388668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617388661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4137ee2ced31999499a958e52454a943, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1620072277
 GameObject:
   m_ObjectHideFlags: 0
@@ -30898,7 +30931,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd45228afeba9bd46b586673950da022, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
+  id: 5
+  memberId: 0
   AI: {fileID: 0}
   controlledCharacter: {fileID: 1136225380}
   typ: 2
@@ -30917,6 +30951,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b598d71766f1ffe4b8601608b1790bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 5
 --- !u!114 &1665659098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32757,6 +32792,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de9c467ab2eb404b8514f09cb530533, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 3
   userName: {fileID: 2107776983}
   score: {fileID: 719696161}
   border: {fileID: 734296889}
@@ -32812,6 +32848,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de9c467ab2eb404b8514f09cb530533, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 1
   userName: {fileID: 419432934}
   score: {fileID: 1309949735}
   border: {fileID: 1637981512}
@@ -36657,7 +36694,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Host: 0
-  playerPortraits: {fileID: 0}
   localPlayers: 1
 --- !u!4 &2070734336
 Transform:
@@ -36718,7 +36754,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd45228afeba9bd46b586673950da022, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
+  id: 4
+  memberId: 0
   AI: {fileID: 0}
   controlledCharacter: {fileID: 1190317033}
   typ: 2
@@ -36737,6 +36774,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b598d71766f1ffe4b8601608b1790bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 4
 --- !u!114 &2091349392
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37388,12 +37426,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd45228afeba9bd46b586673950da022, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
+  id: 1
+  memberId: 0
   AI: {fileID: 2134715469}
   controlledCharacter: {fileID: 121255469}
-  typ: 2
-  HorizontalAxis: Horizontal
-  VerticalAxis: Vertical
+  typ: 0
+  HorizontalAxis: Horizontal1
+  VerticalAxis: Vertical1
   color: {r: 1, g: 1, b: 0, a: 1}
 --- !u!114 &2134715468
 MonoBehaviour:
@@ -37407,6 +37446,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b598d71766f1ffe4b8601608b1790bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 1
 --- !u!114 &2134715469
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -6,7 +6,8 @@ using TMPro;
 
 public class PortriaitPlayerView : MonoBehaviour
 {
-
+    public long id;
+    public long memberId;
     public TextMeshProUGUI userName;
     public TextMeshProUGUI score;
     public Image border;

@@ -6,19 +6,35 @@ using System;
 public class InputController : MonoBehaviour
 {
     public long id;
+    public long memberId;
     public AIController AI;
     public Character controlledCharacter;
     public TypeOfContoller typ;
     public string HorizontalAxis = "Horizontal", VerticalAxis = "Vertical";
     public Color color;
+
+
+
     Vector2 dir = new Vector2();
+
+
+
     MoveCommand previousMoveCommand;
     InputData latestInputUpdate;
+
+
     private void Start()
     {
         AI = GetComponent<AIController>();
     }
-    
+    public Character GetControlledCharacter()
+    {
+        return controlledCharacter;
+    }
+    public void SetTheControlledCharcter(Character character)
+    {
+        controlledCharacter = character;
+    }
     private void Update()
     {
         if (typ == TypeOfContoller.Local)
@@ -48,16 +64,17 @@ public class InputController : MonoBehaviour
             // Client
             if (typ == TypeOfContoller.Local)
             {
-                InputData data = new InputData(Input.GetAxisRaw(HorizontalAxis), Input.GetAxisRaw(VerticalAxis), id);
+                InputData data = new InputData(Input.GetAxisRaw(HorizontalAxis), Input.GetAxisRaw(VerticalAxis), memberId);
                 if (latestInputUpdate.x != data.x || latestInputUpdate.y != data.y)
                 {
                     latestInputUpdate = data;
-                    Debug.Log(DiscordNetworkLayerService.INSTANCE.SendMessegeToOwnerOfLobby(NetworkChannel.INPUT_DATA, latestInputUpdate.ToBytes()));
+                    DiscordNetworkLayerService.INSTANCE.SendMessegeToOwnerOfLobby(NetworkChannel.INPUT_DATA, latestInputUpdate.ToBytes());
                 }
             }
             //Send Messege to host to update this player
         }
     }
+
     public void SetDirection(InputData data)
     {
         dir = new Vector2(data.x, data.y);

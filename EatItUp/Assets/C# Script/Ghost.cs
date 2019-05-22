@@ -16,14 +16,15 @@ public class Ghost : Character
         { 
             Character other = collision.collider.GetComponent<Character>();
             InputController tempCurrentController = GetCurrentController();
+            if (GameManager.INSTANCE.IsTheHost())
+                tempCurrentController.GetComponent<Score>().AddToValue(50);
 
-            tempCurrentController.GetComponent<Score>().AddToValue(50);
             SetCurrentController(other.GetCurrentController());
             other.SetCurrentController(tempCurrentController);
 
             if (GameManager.INSTANCE.IsTheHost())
             {
-                PlayerHandler.inst.ResetCharactersPosition();
+                PlayerHandler.INSTANCE.ResetCharactersPosition();
                 //PlayerHandler.inst.SyncInputControllers();
             }
             //TODO: Host sends out change of owner to clients

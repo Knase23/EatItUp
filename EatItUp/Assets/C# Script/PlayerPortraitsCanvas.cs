@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerPortraitsCanvas : MonoBehaviour
 {
     public static PlayerPortraitsCanvas INSTANCE;
-    public List<PortriaitPlayerView> portriaits = new List<PortriaitPlayerView>();
+    public Dictionary<long, PortriaitPlayerView> pairedPortriats = new Dictionary<long, PortriaitPlayerView>();
     private void Awake()
     {
         if(INSTANCE)
@@ -16,7 +16,11 @@ public class PlayerPortraitsCanvas : MonoBehaviour
         {
             INSTANCE = this;
             DontDestroyOnLoad(gameObject);
-            portriaits.AddRange(GetComponentsInChildren<PortriaitPlayerView>());
+            var portriaits = GetComponentsInChildren<PortriaitPlayerView>();
+            foreach (var item in portriaits)
+            {
+                pairedPortriats.Add(item.id, item);
+            }
         }
     }
 }

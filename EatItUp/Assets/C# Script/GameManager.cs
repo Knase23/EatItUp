@@ -8,7 +8,6 @@ public class GameManager : MonoBehaviour
 
     public static GameManager INSTANCE;
     public bool Host;
-    public GameObject playerPortraits;
 
     public int localPlayers = 1;
 
@@ -70,14 +69,14 @@ public class GameManager : MonoBehaviour
             {
                 if (item.Id != clientUserId)
                 {
-                    controllers[i].id = item.Id;
+                    controllers[i].memberId = item.Id;
                     controllers[i].typ = InputController.TypeOfContoller.Online;
                     controllers[i].VerticalAxis = string.Empty;
                     controllers[i++].HorizontalAxis = string.Empty;
                 }
                 else
                 {
-                    controllers[i].id = item.Id;
+                    controllers[i].memberId = item.Id;
                     controllers[i].typ = InputController.TypeOfContoller.Local;
                     controllers[i].VerticalAxis = "Vertical" + (controllerCOunter);
                     controllers[i++].HorizontalAxis = "Horizontal" + (controllerCOunter);

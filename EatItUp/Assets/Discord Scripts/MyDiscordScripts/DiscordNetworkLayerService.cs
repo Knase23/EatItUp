@@ -48,20 +48,27 @@ public class DiscordNetworkLayerService : MonoBehaviour
         switch (channel)
         {
             case NetworkChannel.INPUT_DATA:
-                InputController.InputData inputData = new InputController.InputData(data);
-                PlayerHandler.inst?.SetInputOnController(inputData);
+               
+                PlayerHandler.INSTANCE?.SetInputOnController(data);
                 break;
             case NetworkChannel.LOADSCENE:
                 GameManager.LoadSceneData sceneToLoad = new GameManager.LoadSceneData(data);
                 GameManager.INSTANCE.LoadScene(sceneToLoad.scene);
                 break;
             case NetworkChannel.CHARACTER_POSITION:
-                Movement.MovementData movementData = new Movement.MovementData(data);
-                PlayerHandler.inst?.SetPositionOfCharacter(movementData);
+                
+                PlayerHandler.INSTANCE?.SetPositionOfCharacter(data);
                 break;
             case NetworkChannel.CONTROLLER_SYNC:
                 PlayerHandler.PlayerHandlerData handlerData = new PlayerHandler.PlayerHandlerData(data);
-                PlayerHandler.inst?.SetAllPlayers(handlerData.orderSelected, handlerData.orderOfId);
+                PlayerHandler.INSTANCE?.SetAllPlayers(handlerData.orderSelected, handlerData.orderOfId);
+                break;
+            case NetworkChannel.SCORE_SYNC:
+                ScoreData scoreData = new ScoreData(data);
+                ScoreUpdater.INSTANCE?.UpdateScore(scoreData);
+                break;
+            case NetworkChannel.PORTRAITS_SYNC:
+                DisplayPlayers.INSTANCE.SetOrder(data);
                 break;
             default:
                 Debug.Log(peerId + " : Sent messege was not reognized");
@@ -148,6 +155,8 @@ public class DiscordNetworkLayerService : MonoBehaviour
         manager.OpenChannel(peer_id, (byte)NetworkChannel.INPUT_DATA, true);
         manager.OpenChannel(peer_id, (byte)NetworkChannel.LOADSCENE, true);
         manager.OpenChannel(peer_id, (byte)NetworkChannel.CONTROLLER_SYNC, true);
+        manager.OpenChannel(peer_id, (byte)NetworkChannel.SCORE_SYNC, true);
+        manager.OpenChannel(peer_id, (byte)NetworkChannel.PORTRAITS_SYNC, true);
         manager.OpenChannel(peer_id, (byte)NetworkChannel.CHARACTER_POSITION, false);
 
         if (!othersUserPeerIds.Contains(peer_id))
@@ -197,6 +206,8 @@ public class DiscordNetworkLayerService : MonoBehaviour
         if (memberIdToPeerId.TryGetValue(member, out peer_id))
         {
             manager.ClosePeer(peer_id);
+            othersUserPeerIds.Remove(peer_id);
+            memberIdToPeerId.Remove(member);
         }
     }
 }
@@ -208,6 +219,8 @@ public enum NetworkChannel
     INPUT_DATA = 1,
     LOADSCENE,
     CHARACTER_POSITION,
-    CONTROLLER_SYNC
+    CONTROLLER_SYNC,
+    SCORE_SYNC,
+    PORTRAITS_SYNC
 
 }

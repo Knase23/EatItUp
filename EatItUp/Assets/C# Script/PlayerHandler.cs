@@ -5,16 +5,18 @@ using System;
 public class PlayerHandler : MonoBehaviour
 {
 
-    public static PlayerHandler inst;
+    public static PlayerHandler INSTANCE;
 
-    InputController[] controllers;
+    internal InputController[] controllers;
     public List<Character> playableChracters = new List<Character>();
     private InputController currentHolderOfPac;
     private Dictionary<long, Character> charactherDictionary = new Dictionary<long, Character>();
-    private Dictionary<long, InputController> controllerDictionary = new Dictionary<long, InputController>();
+    internal Dictionary<long, InputController> controllerDictionary = new Dictionary<long, InputController>();
+    
+
     private void Awake()
     {
-        inst = this;
+        INSTANCE = this;
     }
     // Start is called before the first frame update
     void Start()
@@ -27,8 +29,8 @@ public class PlayerHandler : MonoBehaviour
         GameManager.INSTANCE.AssignPlayersToControllers(ref controllers);
         foreach (var controller in controllers)
         {
-            if (controller.id != 0)
-                controllerDictionary.Add(controller.id, controller);
+            if (controller.memberId != 0)
+                controllerDictionary.Add(controller.memberId, controller);
         }
         if (GameManager.INSTANCE.IsTheHost())
         {
@@ -43,7 +45,7 @@ public class PlayerHandler : MonoBehaviour
                     rand = UnityEngine.Random.Range(0, playableChracters.Count);
 
                 selected.Add(rand);
-                selectediD.Add(controller.id);
+                selectediD.Add(controller.memberId);
             }
 
             SetAllPlayers(selected.ToArray(), selectediD.ToArray());
@@ -59,7 +61,7 @@ public class PlayerHandler : MonoBehaviour
         List<long> selectediD = new List<long>();
         foreach (var controller in controllers)
         {
-            selectediD.Add(controller.id);
+            selectediD.Add(controller.memberId);
             selected.Add(GetIndexOfCharacter(controller.controlledCharacter));
         }
         PlayerHandlerData data = new PlayerHandlerData(selected.ToArray(), selectediD.ToArray());
@@ -68,15 +70,16 @@ public class PlayerHandler : MonoBehaviour
 
     public void SetAllPlayers(int[] orderdSelected, long[] idSelected)
     {
+        
         int i = 0;
         int localControllers = 1;
         foreach (var controller in controllers)
         {
-            controller.id = idSelected[i];
+            controller.memberId = idSelected[i];
             controller.controlledCharacter = playableChracters[orderdSelected[i++]];
             controller.controlledCharacter.SetCurrentController(controller);
 
-            if (DiscordLobbyService.INSTANCE.currentLobbyId == 0 || controller.id == DiscordLobbyService.INSTANCE.GetCurrentUserId())
+            if (DiscordLobbyService.INSTANCE.currentLobbyId == 0 || controller.memberId == DiscordLobbyService.INSTANCE.GetCurrentUserId())
             {
                 controller.VerticalAxis = "Vertical" + localControllers;
                 controller.HorizontalAxis = "Horizontal" + localControllers;
@@ -87,8 +90,15 @@ public class PlayerHandler : MonoBehaviour
             {
                 controller.VerticalAxis = string.Empty;
                 controller.HorizontalAxis = string.Empty;
-                controller.typ = InputController.TypeOfContoller.Online;
+                if(GameManager.INSTANCE.IsTheHost() && controller.memberId == 0)
+                    controller.typ = InputController.TypeOfContoller.AI;
+                else
+                {
+                    controller.typ = InputController.TypeOfContoller.Online;
+                }
             }
+            
+
         }
     }
 
@@ -99,7 +109,8 @@ public class PlayerHandler : MonoBehaviour
 
     public void GivePointsForPacman()
     {
-        currentHolderOfPac.GetComponent<Score>().AddToValue(10);
+        if (GameManager.INSTANCE.IsTheHost())
+            currentHolderOfPac.GetComponent<Score>().AddToValue(10);
     }
 
     public int GetIndexOfCharacter(Character character)
@@ -125,30 +136,32 @@ public class PlayerHandler : MonoBehaviour
 
         foreach (var item in controllers)
         {
-            if (item.id == userid)
+            if (item.memberId == userid)
                 return item;
         }
 
         return null;
     }
-    public bool SetInputOnController(InputController.InputData data)
+    public bool SetInputOnController(byte[] data)
     {
+        InputController.InputData inputData = new InputController.InputData(data);
         InputController controller = null;
 
-        if (!controllerDictionary.TryGetValue(data.id, out controller))
+        if (!controllerDictionary.TryGetValue(inputData.id, out controller))
             return false;
 
-        controller.SetDirection(data);
+        controller.SetDirection(inputData);
         return true;
     }
-    public bool SetPositionOfCharacter(Movement.MovementData data)
+    public bool SetPositionOfCharacter(byte[] data)
     {
+        Movement.MovementData movementData = new Movement.MovementData(data);
         Character character = null;
-        if (!charactherDictionary.TryGetValue(data.characterId, out character))
+        if (!charactherDictionary.TryGetValue(movementData.characterId, out character))
             return false;
 
-        character.SetPosition(data.x, data.y);
-        character.SetRotation(data.rotationZ);
+        character.SetPosition(movementData.x, movementData.y);
+        character.SetRotation(movementData.rotationZ);
         return true;
     }
     public InputController[] GetInputControllers()

@@ -41,15 +41,19 @@ public abstract class Character : MonoBehaviour
     {
         transform.rotation = Quaternion.Euler(0, 0, z); ;
     }
+    /// <summary>
+    /// Set the controller that should conrtol this character
+    /// </summary>
+    /// <param name="controller"></param>
     public void SetCurrentController(InputController controller)
     {
+        controller.SetTheControlledCharcter(this);
         currentController = controller;
-        controller.controlledCharacter = this;
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.color = currentController.color;
+        spriteRenderer.color = controller.color;
 
         if (tag == "Pac")
-            PlayerHandler.inst.SetCurrentHolderOfPac(controller);
+            PlayerHandler.INSTANCE.SetCurrentHolderOfPac(controller);
     }
     public InputController GetCurrentController()
     {

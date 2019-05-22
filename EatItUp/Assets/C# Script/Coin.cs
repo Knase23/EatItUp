@@ -9,10 +9,7 @@ public class Coin : MonoBehaviour
         if(collision.tag == "Pac")
         {
             //Give the Player point
-            if(GameManager.INSTANCE.IsTheHost())
-                PlayerHandler.inst.GivePointsForPacman();
-
-
+            PlayerHandler.INSTANCE.GivePointsForPacman();
             //"Remove" the coin
             gameObject.SetActive(false);
         }
