@@ -9,6 +9,8 @@ public class Movement : MonoBehaviour
     [Range(1,10)]
     public float speed;
     public bool pac;
+    public LayerMask mask;
+    public float distance = 0.3f;
     Vector3 spawnPoint;
     Rigidbody2D rigidbody2d;
     MovementData latestUpdatedPosition;
@@ -20,6 +22,42 @@ public class Movement : MonoBehaviour
     }
     public void Move(Vector3 dir)
     {
+        if (dir.x > 0)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right, distance, mask);
+            if (hit)
+            {
+                dir.x = 0;
+            }
+
+        }
+        if (dir.x < 0)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.left, distance, mask);
+            if (hit)
+            {
+                dir.x = 0;
+            }
+        }
+        if (dir.y > 0)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.up, distance, mask);
+            if (hit)
+            {
+                dir.y = 0;
+            }
+        }
+        if (dir.y < 0)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, distance, mask);
+            if (hit)
+            {
+                dir.y = 0;
+            }
+        }
+
+
+
         if (dir != Vector3.zero)
         {
             Direction = dir;

@@ -37,9 +37,17 @@ public abstract class Character : MonoBehaviour
     {
         transform.position = new Vector3(x, y);
     }
+
     public void SetRotation(float z)
     {
         transform.rotation = Quaternion.Euler(0, 0, z); ;
+    }
+
+    public void SwitchControllers(Character other)
+    {
+        InputController tempCurrentController = GetCurrentController();
+        SetCurrentController(other.GetCurrentController());
+        other.SetCurrentController(tempCurrentController);
     }
     /// <summary>
     /// Set the controller that should conrtol this character

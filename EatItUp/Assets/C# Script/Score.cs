@@ -5,7 +5,7 @@ using System;
 public class Score : MonoBehaviour
 {
     public long id;
-    private InputController controller;
+    public InputController controller;
     private int value;
     private PortriaitPlayerView playerView;
     private void Start()
@@ -17,13 +17,13 @@ public class Score : MonoBehaviour
     {
         value += amount;
         playerView.SetScoreText(value);
+        ScoreUpdater.CheckHigestOrLowestScore(this);
         ////Update Value in key for player
         if (GameManager.INSTANCE.IsTheHost() && DiscordLobbyService.INSTANCE.Online())
         {
             ScoreData data = new ScoreData(value, id);
             DiscordNetworkLayerService.INSTANCE.SendMessegeToAllOthers(NetworkChannel.SCORE_SYNC, data.ToBytes());
         }
-
     }
     public void UpdateBasedOnLobbyMemeber()
     {

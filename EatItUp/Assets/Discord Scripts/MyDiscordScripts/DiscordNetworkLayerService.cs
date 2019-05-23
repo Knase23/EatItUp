@@ -56,7 +56,6 @@ public class DiscordNetworkLayerService : MonoBehaviour
                 GameManager.INSTANCE.LoadScene(sceneToLoad.scene);
                 break;
             case NetworkChannel.CHARACTER_POSITION:
-                
                 PlayerHandler.INSTANCE?.SetPositionOfCharacter(data);
                 break;
             case NetworkChannel.CONTROLLER_SYNC:

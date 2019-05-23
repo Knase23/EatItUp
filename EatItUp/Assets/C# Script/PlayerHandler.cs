@@ -9,7 +9,7 @@ public class PlayerHandler : MonoBehaviour
 
     internal InputController[] controllers;
     public List<Character> playableChracters = new List<Character>();
-    private InputController currentHolderOfPac;
+    public InputController currentHolderOfPac;
     private Dictionary<long, Character> charactherDictionary = new Dictionary<long, Character>();
     internal Dictionary<long, InputController> controllerDictionary = new Dictionary<long, InputController>();
     
@@ -107,7 +107,7 @@ public class PlayerHandler : MonoBehaviour
         currentHolderOfPac = current;
     }
 
-    public void GivePointsForPacman()
+    public void GivePointsToPacman()
     {
         if (GameManager.INSTANCE.IsTheHost())
             currentHolderOfPac.GetComponent<Score>().AddToValue(10);
@@ -142,6 +142,7 @@ public class PlayerHandler : MonoBehaviour
 
         return null;
     }
+
     public bool SetInputOnController(byte[] data)
     {
         InputController.InputData inputData = new InputController.InputData(data);
@@ -153,6 +154,7 @@ public class PlayerHandler : MonoBehaviour
         controller.SetDirection(inputData);
         return true;
     }
+
     public bool SetPositionOfCharacter(byte[] data)
     {
         Movement.MovementData movementData = new Movement.MovementData(data);
@@ -164,10 +166,12 @@ public class PlayerHandler : MonoBehaviour
         character.SetRotation(movementData.rotationZ);
         return true;
     }
+
     public InputController[] GetInputControllers()
     {
         return controllers;
     }
+
     /// <summary>
     /// Data sent to the host and convernet for handeling the order and selected character for all InputControllers 
     /// </summary>
@@ -180,6 +184,7 @@ public class PlayerHandler : MonoBehaviour
             this.orderSelected = orderSelected;
             this.orderOfId = orderOfId;
         }
+
         public PlayerHandlerData(byte[] data)
         {
             int size = BitConverter.ToInt32(data, 0);
@@ -194,6 +199,7 @@ public class PlayerHandler : MonoBehaviour
                 orderOfId[i] = BitConverter.ToInt64(data, i * 8 + size * 4 + 4);
             }
         }
+
         public byte[] ToBytes()
         {
             List<byte> byteList = new List<byte>();

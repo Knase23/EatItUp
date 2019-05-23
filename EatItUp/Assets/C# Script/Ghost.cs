@@ -15,12 +15,10 @@ public class Ghost : Character
         if (collision.collider.tag == "Pac")
         { 
             Character other = collision.collider.GetComponent<Character>();
-            InputController tempCurrentController = GetCurrentController();
             if (GameManager.INSTANCE.IsTheHost())
-                tempCurrentController.GetComponent<Score>().AddToValue(50);
+                GetCurrentController().GetComponent<Score>().AddToValue(50);
 
-            SetCurrentController(other.GetCurrentController());
-            other.SetCurrentController(tempCurrentController);
+            SwitchControllers(other);
 
             if (GameManager.INSTANCE.IsTheHost())
             {

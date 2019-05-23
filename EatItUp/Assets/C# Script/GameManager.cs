@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour
         localPlayers++;
         DiscordLobbyService.INSTANCE.UpdateLobbySize((uint)localPlayers - 1);
     }
+
     public void AssignPlayersToControllers(ref InputController[] controllers )
     {
         long clientUserId = DiscordLobbyService.INSTANCE.currentOwnerId;
