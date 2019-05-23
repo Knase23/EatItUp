@@ -7365,6 +7365,7 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
+  - component: {fileID: 519420030}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -7380,6 +7381,19 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
+--- !u!114 &519420030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1ed69d04d8503b43a803e1f208dc14d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -9287,6 +9301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 3
+  controller: {fileID: 0}
 --- !u!114 &590081682
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19851,6 +19866,7 @@ MonoBehaviour:
   - {fileID: 547591387}
   - {fileID: 1190317033}
   - {fileID: 1136225380}
+  currentHolderOfPac: {fileID: 0}
 --- !u!114 &984136079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19863,8 +19879,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f54ee9cf74663342bd8bf08faed9f3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lowestScore: {fileID: 0}
-  highestScore: {fileID: 0}
+  allScores: []
 --- !u!114 &984136080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29044,6 +29059,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 2
+  controller: {fileID: 0}
 --- !u!114 &1563604213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30990,6 +31006,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 5
+  controller: {fileID: 0}
 --- !u!114 &1665659098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36924,6 +36941,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 4
+  controller: {fileID: 0}
 --- !u!114 &2091349392
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37596,6 +37614,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 1
+  controller: {fileID: 0}
 --- !u!114 &2134715469
 MonoBehaviour:
   m_ObjectHideFlags: 0

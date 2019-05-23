@@ -96,10 +96,9 @@ public class PlayerHandler : MonoBehaviour
                 {
                     controller.typ = InputController.TypeOfContoller.Online;
                 }
-            }
-            
-
+            }            
         }
+        ScreenShake.screen.Shake();
     }
 
     public void SetCurrentHolderOfPac(InputController current)

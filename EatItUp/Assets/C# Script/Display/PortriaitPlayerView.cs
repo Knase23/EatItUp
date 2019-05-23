@@ -17,13 +17,17 @@ public class PortriaitPlayerView : MonoBehaviour
     private string defaultScore;
     private Color defaultBorder;
 
+    private int displayedScore;
+    private int actualScore;
+    bool coroutine = true;
+
     private void Start()
     {
         defaultUserName = userName.text;
         defaultScore = score.text;
         defaultBorder = border.color;
     }
-    public void SetUser(string userName, string score,Texture2D avatarImage = null)
+    public void SetUser(string userName, string score, Texture2D avatarImage = null)
     {
         this.userName.text = userName;
         this.score.text = score;
@@ -38,6 +42,23 @@ public class PortriaitPlayerView : MonoBehaviour
     }
     public void SetScoreText(int value)
     {
-        score.text = "Score: " + value;
+        actualScore = value;
+        if (coroutine)
+            StartCoroutine(ScoreGoingUp());
     }
+    IEnumerator ScoreGoingUp()
+    {
+        coroutine = false;
+        while (displayedScore < actualScore)
+        {
+            displayedScore++;
+            score.text = "Score: " + displayedScore;
+
+            float t = 1f / ((actualScore - displayedScore) + 1);
+            yield return new WaitForSeconds(t);
+        }
+        coroutine = true;
+        yield break;
+    }
+
 }
